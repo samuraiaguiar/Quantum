@@ -162,73 +162,19 @@
 \section{Introduction}
 \label{sec:introduction}
 
-% \sam{I'll skip the introduction for now} 
-\sam{Quantum Machine Learning (QML) is an emerging area of quantum applications that aims to explore the impacts of quantum computing for learning tasks ~\cite{Huang2022Quantumadvantagein, Liu2021Arigorousandrobust}.}\sam{bring some references}.
-%As Quantum Machine Learning (QML) matures, a growing body of work asks whether combining parameterised quantum circuits (PQCs) with established deep-learning components can yield behaviour that the classical components do not exhibit on their own. Hybrid quantum neural networks (HQNNs), in which the bulk of the model remains classical and only a small block is delegated to a quantum device, are widely regarded as the pragmatic formulation for noisy intermediate-scale quantum (NISQ) hardware~\cite{preskill2018}: they keep circuits shallow and narrow, and they leave the burden of representing high-dimensional raw features to classical layers that are known to do it well~\cite{benedetti2019}.
+Quantum machine learning (QML) studies how quantum information processing can be used within learning algorithms, ranging from fault-tolerant quantum algorithms to near-term hybrid models based on parameterized quantum circuits (PQCs)~\cite{Biamonte2017Quantummachinelear,Benedetti2019Parameterizedquant,Cerezo2021Variationalquantum}. For the latter, a quantum circuit acts as a trainable function approximator embedded in an otherwise classical learning pipeline. This paradigm has motivated results on quantum feature spaces~\cite{Schuld2019QuantumMachineLear,Havlek2019Supervisedlearning}, quantum neural networks~\cite{Abbas2021Thepowerofquantumn}, and the role of data encoding in determining the functions accessible to variational models~\cite{Schuld2021Effectofdataencodi}. At the same time, the QML literature makes clear that expressive quantum models are not by themselves evidence of a practical quantum advantage: trainability, data access, fair classical baselines, sampling cost, and classical simulability can determine whether an apparent advantage survives careful comparison~\cite{Huang2021Powerofdatainquant,Tang2022Dequantizingalgori,McClean2018Barrenplateausinqu}.
 
-Reinforcement learning (RL) is an appealing target for this kind of
-hybridisation, and a demanding one. It is appealing because an RL agent learns a policy from interaction rather than from labelled examples, which suits financial settings where the data-generating process drifts and where the
-quantity of interest is a sequence of decisions rather than a single
-prediction. It is demanding because RL training is notoriously
-high-variance: the same architecture, trained twice under different random
-initialisations, can produce policies whose realised returns differ by a wide
-margin. This second property is the methodological crux of the present work.
-In a domain where single runs are not informative, any claim about the effect
-of a quantum layer that rests on a single quantum trajectory compared against a
-single classical trajectory is not identifiable --- the difference could as
-easily be an artefact of initialisation.
+Quantum reinforcement learning (QRL) brings these questions into the sequential decision-making setting. In variational QRL, PQCs have been used as trainable approximators for value functions and policies. Early demonstrations showed that variational circuits can be integrated into deep-RL pipelines~\cite{Chen2020VariationalQuantumCi}; subsequent work developed parametrized quantum policies~\cite{Jerbi2021ParametrizedQuantumP}, variational deep Q-learning agents~\cite{Skolik2022QuantumagentsintheGy}, and policy-gradient formulations~\cite{Sequeira2023Policygradientsusing}. These studies establish that compact quantum models can learn standard benchmark environments and, for specially constructed problem families, theoretical separations from restricted classical learners can be obtained. They do not, however, establish a generic practical advantage for variational QRL. In particular, architectural and hyperparameter choices can dominate parameter-count comparisons~\cite{Skolik2022QuantumagentsintheGy}; hardware and finite-shot noise introduce additional costs and stochasticity~\cite{Skolik2023Robustnessofquantumr}; and recent benchmarking work has shown that conclusions of quantum outperformance can change materially when statistical uncertainty and sample complexity are treated explicitly~\cite{Meyer2025BenchmarkingQuantumR}. We therefore use ``quantum'' here to identify the parameterization of one component of the policy, not as a claim of quantum advantage.
 
-%
-This research focus on three principal commitments, each of which shapes the
-structure of the paper. First, the quantum and classical models must differ in
-exactly one block, with identical interfaces, so that the comparison is
-attributable to the parameterisation of that block. Second, every configuration
-must be characterised by a \emph{distribution} over independent training runs
-rather than by a point estimate. Third, the quantum block must be evaluated in
-a regime in which its contribution can be separated from estimation noise; for
-that reason the experiments reported here are conducted with exact
-(statevector) expectation values, which correspond to the noiseless limit of
-the circuit and isolate the architectural effect. Finite-shot estimation and
-execution on hardware introduce a second, independent source of stochasticity
-and are outside the scope of this study (\ref{sec:limitations}).
+Portfolio management is a useful testbed for this distinction. Unlike a static allocation problem, sequential portfolio optimization requires a policy to repeatedly map evolving market observations and previous allocations into new portfolio weights while accounting for the consequences of rebalancing. Deep reinforcement learning provides a natural formulation of this problem~\cite{jiang2017deepreinforcementlearningframework}, and RLPortfolio provides an open implementation of this family of environments and policy-gradient agents~\cite{RLportfolio}. Yet RL also introduces a methodological difficulty that is particularly important for hybrid quantum--classical comparisons: training outcomes can vary substantially across random initializations. A difference between one quantum run and one classical run therefore does not identify an architectural effect.
 
-The narrative of the paper follows the order in which the experimental
-decisions were actually taken:
+This work addresses a deliberately narrower question than whether QRL provides a quantum advantage for portfolio optimization: \emph{what changes in the behavior of an RL portfolio agent when a single latent block of its policy network is replaced by a PQC, while the remainder of the learning system is held fixed?} The distinction is important. Our experiments use exact statevector expectation values and small circuits that are classically simulable; consequently, they cannot demonstrate computational speedup, hardware advantage, or end-to-end resource advantage. Instead, the goal is to isolate the inductive effect of the variational block under controlled conditions and determine whether it changes the distribution of learned policies across independent training runs.
 
-\begin{enumerate}
-  \item We adopt an existing RL framework for portfolio
-        optimisation~\cite{RLportfolio} and survey the policy architectures it
-        provides, selecting EI3~\cite{costa2023} --- a convolutional descendant
-        of the EIIE formulation of Jiang et al.~\cite{jiang2017} --- as the
-        baseline. The selection is supported by an experiment, not by
-        assumption: EI3 is characterised across three training budgets to
-        establish both its attainable level and its dispersion before any
-        modification is introduced (\ref{subsec:res-baseline}).
-  \item EI3 in its original form has no latent representation of a width we can
-        control, and therefore no natural site for a quantum block. We derive a
-        scaffold --- a latent projection with bounded angle encoding and an MLP decision head --- that creates such a site, and we justify the removal of the gated residual branch that an early hybrid design contained, on the grounds that a bypass path around the block destroys the identifiability of the ablation (\ref{subsec:design-constraints}).
-  \item We then ask whether the scaffold alone accounts for any change, by
-        evaluating it with the latent block removed entirely (the No-Layer
-        variant), run by run (\ref{subsec:res-scaffold}).
-  \item From the scaffold we derive two models that differ only in the
-        parameterisation of the latent block: a classical dense layer
-        (QEI3-eq) and a variational circuit (QEI3). We sweep the width of the
-        classical block (\ref{subsec:res-classical-width}) and, under exact
-        simulation, the width of the quantum register
-        (\ref{subsec:res-qubit-width}), and finally compare the two at matched
-        width (\ref{subsec:res-headtohead}).
-\end{enumerate}
+To make that comparison identifiable, we impose three experimental commitments. First, the quantum and classical agents differ only in the latent block and share the same feature extractor, interfaces, decision head, reward, environment, data split, and training procedure. Second, each configuration is characterized by a distribution over independent training runs rather than by a single trajectory. Third, the quantum block is initially evaluated with exact expectation values, removing finite-shot and hardware noise so that stochastic variation is attributable to the learning procedure rather than quantum measurement. Finite-shot estimation is then treated as a separate resource and robustness question rather than being conflated with the architectural ablation.
 
-The contributions are: (i) a hybridisation-ready reformulation of EI3 together
-with the design rationale that makes a latent-block ablation identifiable;
-(ii) a repeated-run experimental protocol under which every configuration is
-reported as a distribution rather than a point; (iii) an empirical
-characterisation, in the noiseless limit, of what the variational block changes
---- principally the dispersion of the learned policy across initialisations;
-and (iv) evidence that this effect is insensitive to register width over
-\num{2}--\num{8} qubits, together with a theoretical reading of why that is the
-expected behaviour for the encoding and readout adopted.
+Starting from the EI3 convolutional policy available in RLPortfolio~\cite{RLportfolio}, itself descended from the EIIE formulation of Jiang et al.~\cite{jiang2017deepreinforcementlearningframework}, we construct a scaffold with an interchangeable latent representation. We compare three cases: no latent layer, a classical dense latent layer, and a PQC latent layer with matched input/output width. We then vary classical width, quantum register width, and measurement budget to determine which observed effects are attributable to the presence of the variational block and which depend on its scale or on expectation-value estimation.
 
+The main contribution is therefore methodological and empirical rather than a claim of quantum superiority. We provide (i) a hybridization-ready reformulation of EI3 in which the latent-block ablation is identifiable; (ii) a repeated-run protocol that exposes the distribution of RL outcomes instead of relying on point comparisons; (iii) an empirical characterization of the effect of replacing the latent block by a variational circuit in the noiseless simulation limit; and (iv) tests of the sensitivity of this effect to register width and measurement sampling. In the experiments reported below, the most pronounced difference is a contraction of run-to-run dispersion rather than a statistically established improvement in mean return. We interpret that observation as a property of the tested architecture and training regime, and investigate its connection to the bounded, encoding-dependent function class of the variational block rather than treating it as evidence of quantum advantage.
 % =====================================================================
 \section{Background and related work}
 \label{sec:background}
