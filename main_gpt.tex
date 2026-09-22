@@ -174,7 +174,7 @@ To make that comparison identifiable, we impose three experimental commitments. 
 
 Starting from the EI3 convolutional policy available in RLPortfolio~\cite{RLportfolio}, itself descended from the EIIE formulation of Jiang et al.~\cite{jiang2017deepreinforcementlearningframework}, we construct a scaffold with an interchangeable latent representation. We compare three cases: no latent layer, a classical dense latent layer, and a PQC latent layer with matched input/output width. We then vary classical width, quantum register width, and measurement budget to determine which observed effects are attributable to the presence of the variational block and which depend on its scale or on expectation-value estimation.
 
-The main contribution is therefore methodological and empirical rather than a claim of quantum superiority. We provide (i) a hybridization-ready reformulation of EI3 in which the latent-block ablation is identifiable; (ii) a repeated-run protocol that exposes the distribution of RL outcomes instead of relying on point comparisons; (iii) an empirical characterization of the effect of replacing the latent block by a variational circuit in the noiseless simulation limit; and (iv) tests of the sensitivity of this effect to register width and measurement sampling. In the experiments reported below, the most pronounced difference is a contraction of run-to-run dispersion rather than a statistically established improvement in mean return. We interpret that observation as a property of the tested architecture and training regime, and investigate its connection to the bounded, encoding-dependent function class of the variational block rather than treating it as evidence of quantum advantage.
+\sam{IMPROVE: The main contribution is therefore methodological and empirical rather than a claim of quantum superiority. We provide (i) a hybridization-ready reformulation of EI3 in which the latent-block ablation is identifiable; (ii) a repeated-run protocol that exposes the distribution of RL outcomes instead of relying on point comparisons; (iii) an empirical characterization of the effect of replacing the latent block by a variational circuit in the noiseless simulation limit; and (iv) tests of the sensitivity of this effect to register width and measurement sampling. In the experiments reported below, the most pronounced difference is a contraction of run-to-run dispersion rather than a statistically established improvement in mean return. We interpret that observation as a property of the tested architecture and training regime, and investigate its connection to the bounded, encoding-dependent function class of the variational block rather than treating it as evidence of quantum advantage.}
 % =====================================================================
 \section{Background and related work}
 \label{sec:background}
@@ -955,8 +955,8 @@ sample size.
 % =====================================================================
 
 % =====================================================================
-\bibliographystyle{splncs04}
-\bibliography{references}
+% \bibliographystyle{splncs04}
+\bibliography{ref}
 
 https://arxiv.org/abs/2601.18811 % Paper extremamente relevante de QRL
 
