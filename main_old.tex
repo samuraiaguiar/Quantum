@@ -1,0 +1,279 @@
+% \documentclass{article}
+
+% % Language setting
+% % Replace `english' with e.g. `spanish' to change the document language
+% \usepackage[english]{babel}
+
+% % Set page size and margins
+% % Replace `letterpaper' with `a4paper' for UK/EU standard size
+% \usepackage[letterpaper,top=2cm,bottom=2cm,dafasdfafdsleft=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+% % Useful packages
+% \usepackage{amsmath}
+% \usepackage{graphicx}
+% \usepackage[colorlinks=true, allcolors=blue]{hyperref}
+
+% \title{Benchmarking Hybrid Quantum Reinforcement Learning for Finance-Sector Tasks}
+% \author{Victor Leme Beltran, Antônio Carlos Oliveira Santos, Mateus Cardoso, Ehron, Fernando, Samuraí Brito}
+
+% \begin{document}
+% \maketitle
+\documentclass[aps,floatfix,superscriptaddress,twocolumn,tightenlines,amsmath,amssymb,nofootinbib,10pt,longbibliography,prl]{revtex4-2}
+
+
+% ===== EXTRA PACKAGES =====
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[mathscr]{euscript}
+\usepackage{graphicx}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{amsthm}
+\usepackage{psfrag}
+\usepackage{ifsym}
+\usepackage{dsfont}
+\usepackage{enumerate}
+\usepackage{amsfonts}
+\usepackage{multirow}
+\usepackage{mathtools}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=red, citecolor=blue}
+\usepackage[sort&compress]{natbib}
+\usepackage[separate-uncertainty=true]{siunitx}
+\usepackage{comment}
+\usepackage[normalem]{ulem}
+\usepackage[sc,osf]{mathpazo}\linespread{1.05}
+\usepackage{bm}
+\usepackage{bbm}
+\usepackage{xr}\externaldocument[main-]{main}
+
+\newtheorem{theorem}{Theorem}
+
+% ===== MACROS =====
+\newcommand{\bra}[1] {\langle #1 |}
+\newcommand{\ket}[1] {| #1 \rangle}
+\newcommand{\changed}[1]{\textcolor{red}{ #1}}
+\newcommand{\todo}[1]{\textbf{\textcolor{blue}{ #1}}}
+\newcommand{\new}[1]{\textcolor{brown}{ #1}}
+\newcommand{\fref}[1]{Fig.~\ref{#1}}
+\newcommand{\id}{\mathds{1}}
+
+
+\newcommand{\sam}[1]{\textcolor{magenta}{[SB: {#1}]}}
+\newcommand{\fernando}[1]{{\color{green!50!black} [JV: #1]}}
+\newcommand{\mateus}[1]{{\color{blue!90!black} [GL: #1]}}
+\newcommand{\victor}[1]{{\color{blue!50!blue} [VB: #1]}}
+
+
+% ===== Sets ====== 
+\def\ZZ{\mathbbm{Z}}
+\def\RR{\mathbbm{R}}
+\def\CC{\mathbbm{C}}
+\def\R{\mathbbm{R}}
+\def\FF{\mathbbm{F}}
+\def\NN{\mathbbm{N}}
+\def\EE{\mathbbm{E}}
+\def\AA{\mathcal{A}}
+\def\ee{\epsilon}
+\def\II{\mathcal{I}}
+\def\SS{\mathcal{S}}
+\def\XX{\mathcal{X}}
+\def\MM{\mathcal{M}}
+\def\op{\mathrm{op}}
+\def\aux{\textrm{aux}}
+\def\1{\mathbf{1}}
+\def\0{\mathbf{0}}
+\def\o{\mathbb{O}}
+
+\def\minimize{\textrm{minimize}}
+\def\st{\textrm{subject to }}
+
+\DeclareMathOperator*{\maximize}{Maximize}
+
+\def\H{\mathcal{H}}
+\def\Acal{\mathcal{A}}
+\def\Fou{\mathcal{F}}
+\def\Id{\mathbbm{1}}
+\def\I{\mathbbm{I}}
+\def\spacedot{\,\cdot\,}
+\def\p{\mathbf{p}}
+\def\P{\mathcal{P}}
+\def\ci{\perp\!\!\!\perp}
+
+% For the orthogonal sum
+\newcommand{\operp}{\ensuremath{\text{\textcircled{$\perp$}}}}
+
+% Operators
+\DeclareMathOperator{\Sym}{Sym}
+\DeclareMathOperator{\Ad}{Ad}
+\DeclareMathOperator{\tr}{tr}
+\DeclareMathOperator{\Tr}{Tr}
+\DeclareMathOperator{\rank}{rank}
+\DeclareMathOperator{\range}{range}
+\DeclareMathOperator{\Span}{span}
+\DeclareMathOperator{\supp}{supp}
+\DeclareMathOperator{\const}{const}
+\DeclareMathOperator{\Circ}{Circ}
+\DeclareMathOperator{\ord}{ord}
+\DeclareMathOperator{\minarg}{minarg}
+\DeclareMathOperator{\sign}{sgn}
+
+%%%%%%%%%%%%%%%%%%%
+
+\def\b{\mathbf{b}}
+\def\c{\mathbf{c}}
+\def\d{\mathbf{d}}
+\def\e{\mathbf{e}}
+\def\t{\mathbf{t}}
+\def\u{\mathbf{u}}
+\def\p{\mathbf{p}}
+\def\h{\mathbf{h}}
+\def\q{\mathbf{q}}
+\def\w{\mathbf{w}}
+\def\x{\mathbf{x}}
+\def\y{\mathbf{y}}
+\def\z{\mathbf{z}}
+\def\bxi{\bm{\xi}}
+\def\bzeta{\bm{\zeta}}
+\def\CC{\mathcal{C}}
+\def\CD{\mathcal{D}}
+\def\CP{\mathcal{P}}
+
+\begin{document}
+
+\title{bla bla - decidimos depois}
+
+
+\author{Victor L. Beltran}
+\affiliation{Instituto de Ciência e Tecnologia Itaú}
+\author{Mateus}
+\affiliation{Eldorado}
+
+\author{Erhon}
+\affiliation{Eldorado}
+
+\author{Fernando}
+\affiliation{Eldorado}
+
+\author{Antonio }
+\affiliation{Instituto de Ciência e Tecnologia Itaú}
+
+\author{Samuraí Brito}
+\affiliation{Instituto de Ciência e Tecnologia Itaú}
+\sam{precisamos discutir sobre ordem}
+
+%\href{mailto:jose.scursulim@itau-unibanco.com.br}{jose.scursulim@itau-unibanco.com.br}
+% \href{mailto:victor.beltran@itau-unibanco.com.br}{victor.beltran@itau-unibanco.com.br}
+% \href{mailto:gabriel.langeloh@itau-unibanco.com.br}{gabriel.langeloh@itau-unibanco.com.br}
+% \href{mailto:samurai.brito@itau-unibanco.com.br}{samurai.brito@itau-unibanco.com.br}
+
+\date{\today}
+
+\begin{abstract}
+
+With the current advances in AI, Reinforcement Learning methods have grown in popularity for model training, representing a new learning paradigm that is currently being explored within various sectors of the financial industry. As quantum computing technologies mature, studies have investigated how the current Reinforcement Learning methods can be combined with quantum computing (QC), giving way to what is known as hybrid quantum-classical reinforcement learning approaches. We evaluate, in two important financial problems, fraud detection and portfolio optimization, how the use of a practical paradigm for NISQ (noisy intermediate scale quantum) hardware, namely hybrid quantum neural networks (HQNNs) perform when trained using reinforcement learning techniques.
+
+\end{abstract}
+\maketitle
+
+\section{Introduction}
+
+\sam{The introduction needs a deeper literature review.} As Quantum Machine Learning (QML) advances as a field of research, new areas of study are explored in search of a possible advantage of combining quantum computing with current AI methods. Such is the case with the exploration of hybrid quantum neural networks (HQNNs), where the goal is to leverage both the advantages of the well-known classical methods as well as novel capabilities of quantum neural networks. The use of HQNNs is often regarded as a more practical paradigm for current NISQ hardware, as it may reduce circuit depth and delegate part of the problem of representing the classical features on quantum computers to classical components of the network.
+
+A candidate for further exploration of a possible quantum enhancement is reinforcement learning (RL), a learning paradigm in which an agent is exposed to an environment where, through actions of exploration and exploitation it learns from experience an optimal policy for decision making within that space. 
+
+The use of techniques of reinforcement learning may carry with it some advantages, one of which is the possibility of better adaptation to new patterns that arise over time, such as those observed on credit card fraud scenarios, where fraudsters constantly adapt to different types of fraud methods, mitigating the effects of concept drift. The same idea applies to the combined use of an RL agent with online learning methods, where we may as well adapt to different market dynamics, learning new behaviors from recent experiences, while retaining consistent performance on portfolio allocation.
+
+The exploration of HQNNs with RL within the context of finance is still considerably less mature when compared to the studies on supervised settings. Often, the current experiments rely heavily on toy datasets or narrowly defined experiments due to the high computational costs of the training of such models.
+
+In this paper we explore fraud detection and portfolio optimization with the use of HQNNs and analyze how they affect the behavior of models trained with RL techniques. On the first problem of fraud detection, we compare the overall performance of a classical architecture trained through a process of PPO ANTONIO CORRIJA ISSO CASO ERRADO with its respective hybrid quantum-classical equivalent, which preserves the same network structure, replacing only one of its latent layers with a quantum circuit. For the portfolio optimization, we follow a similar approach, where we set up a training process based on episodic policy gradient optimization with online learning enabled through the validation process. In this setting we also compare the overall performance of a classical neural network based on a CNN with a hybrid quantum-classical equivalent where only a single intermediate latent layer is replaced by a PQC (parameterized quantum circuit).
+
+\section{Reinforcement Learning and Quantum Reinforcement Learning}
+\sam{descrição E EXPLICcaO SOBRE QUANTUM REINFORCEMENT LEARNING, O QUE É, COMO FUNCIONA E ETC}
+
+
+
+
+\section{Fraud Detection Experiment}
+
+One of the most challenging tasks within the financial sector is credit card fraud detection. This task is widely known for being difficult due to the highly unbalanced datasets available for training, where the fraud samples are severely under-sampled when compared with legitimate samples, being the balance between detecting fraudulent transactions and impacting legitimate ones a key characteristic to the problem. This balance challenge, combined to a ever changing environment of frauds makes a great candidate to the exploration algorithms that are capable of adapting over time to new scenarios, while maintaining balance within its classifications, such as those proposed by RL techniques.
+
+On our scenario, we utilize a publicly available dataset for evaluating the potential of QRL strategies with HQNNs on such scenario. The dataset chosen was Credit Card Fraud from Kaggle [ref credit card]. This dataset comprises 284,807 total transactions of which 492 are fraudulent ones. Each transaction has a total of 28 features generated from a PCA related to it in addition to the value of the transaction itself. Due to the dataset being large and eunbalanced, in order to train the hybrid models with a acceptable computational cost, we utilized a under-sampling strategy, where we reduced the number of samples to a total of 1000, where 492 of them were frauds.
+
+In order to train the RL agent for classifying between fraudulent and legitimate transactions, we utilized a simple deep neural network with feed forward layers, where the intermediate latent layer is interchangeably exchanged for a quantum circuit for comparing between hybrid and classical networks. The architecture is as illustrated below:
+
+
+A custom reward function was built in order to better fit the problem and the intended model behavior.
+
+
+EXPLICAÇÃO E DESENVOLVIMENTO + RESULTADOS DETECÇÃO DE FRAUDE
+
+
+\section{Portfolio Optimization Experiment}
+The portfolio optimization problem is a widely explored theme within the context of RL agents, with multiple attempts at implementing dynamic agents capable of reacting to market dynamics in real-time, changing the allocation of funds of a portfolio between a series os assets available. One of the implementations proposed is the one established by \cite{RLportfolio}, where the author built a framework for training RL agents with online learning methods for portfolio optimization based of a gym environment.
+On our use case, we utilize the framework RLPortfolio \cite{RLportfolio} for generating and training our policy based agent for benchmarking the overall performance of quantum models and classical equivalent models.
+
+On this benchmark we utilize a dataset composed of historical data from 10 different stocks from the period of 01/01/2017 to 31/12/2020, respectively represented by the tickers VALE3.SA, PETR4.SA, ITUB4.SA, BBDC4.SA, BBAS3.SA, RENT3.SA, LREN3.SA, PRIO3.SA, WEGE3.SA and ABEV3.SA from the BOVESPA exchange. For each of these stocks, we use the daily values of closing, maximum and minimum price as features for our modeling. All the data obtained is publicly available for usage through yahoo finance python API.
+
+The process of data preparation relies on a simple pipeline, where we firstly separate the data between train and test sets, in a out-of-time strategy, in which the train set is defined by data ranging from the period of 01/01/2017 to 31/12/2019 while the test set is represented by data from 01/01/2020 to 31/12/2020. We then separately normalize both train and test sets and with the use of the wrapper available through the framework, we create both train and test environments, for which both we utilize a starting value of R\$100.000 and a commission free percentage of 0.25\%. On each episode, it is used a snapshot of the last 50 days of historical data in order to produce inference. The final form of a single observation input to the model is therefore, a matrix of three dimensions composed by 10 assets, with 3 features each and a 50 days time frame, that can be described as the tensor of shape [3, 10, 50]. Is is important to note that even though the observation space is composed of the 10 assets, the output vector of our model includes one extra choice for allocation that represents the "cash" asset, which represents the option to not invest in any of the assets available and keeping the funds liquid and non rentable in the form of cash.
+
+The classical network utilized is similar to the one proposed by \cite{jiang2017deepreinforcementlearningframework} and utilizes a three headed convolutional layer for extracting features of short, medium and long term proprieties from the three-dimensional matrix. This layer is then followed by a final convolution and a sequence of linear layers that are responsible for further processing of latent information extracted by the convolutional section. During the forward process of the network, in between the three headed convolutions and the final convolution, the output of the first part is concatenated with a tensor that represents the previous model action as well as a bias towards the choice of cash. The representation of the neural network is as seen below:
+
+IMAGEM REDE NEURAL
+
+The changes in architecture, relative to the EI3 implemented by this paper, are mainly due to the adaptations necessary to input a quantum layer in a effective manner to the network latent representation while keeping the computational cost of the training process of such simulated circuits low enough to be feasible.
+
+For the hybrid version of this neural network, we substitute the latent layer that comes after the final convolution into a quantum layer composed of 8 qubits, constituting the single modification that is done to the network when compared to the classical counterpart. Throughout our comparisons, we interchangeably exchange the ansatz of this circuit in order to explore the best possible solution while maintaining a strategy of angle encoding for the encoding of inputs to this quantum layer. For all the tests with the hybrid approach we utilize as output of the quantum layer, the expectation value of the Z observable of all qubits. This is an architectural choice as we do not intend to expand the dimensions of our network after this layer to a $2^n$ dimension.
+
+IMAGEM CIRCUITO QUÂNTICO IMPLEMENTADO NA REDE
+
+\subsection{Experiments with classical network}
+The classical neural networks utilized on this paper, as noted from the previous section, are significantly different from the original rlportfolio \cite{RLportfolio} paper proposal of EI3 network, which in turn, generates significantly different overall performance of the models as well. Additionally to the difference in architecture, we also explore a different time frame when compared to the original paper due to the high computational cost that is demanded for training of the hybrid neural network. Taking this into consideration, we may add that it is therefore, unfair to compare the performance of our current implementation to the one proposed originally, as our focus for this experiment is to obtain a classical reference benchmark that can be fairly used as a comparison to our hybrid implementation under identical circumstances.
+
+As previously stated, we performed a statistical evaluation of a total of 20 training processes of the classical neural network, and extracted the average performance of it, as well as its standard deviation and overall performance throughout the evaluation environment with the use of online learning. As parameters for the training process of our network, we utilized a learning rate of 1e-5, with batch size of 8, sample bias of 0.5, action noise of Dirichlet with action epsilon of 0.2 and action alpha of 0.01. Each training process was composed of a total of 50 episodes.
+
+The overall model performance is good, with on the evaluation set having a final portfolio performance of 3.5x the initial investment, with a standard deviation of {???}
+
+Gráfico do modelo sendo bom. B = 8 Q = 8
+
+The model has a loss that converges over time following a curve as described below
+
+\subsection{Experiments with hybrid quantum networks}
+For the hybrid network, we utilize the exact same training environment as the one utilized by the classical network. On these experiments, we evaluate the overall performance of the model varying through a combination of different ansatze, number of shots as well as number of qubits. Due to limitations related to the simulation cost of the training process, we analyse each of the previously mentioned combinations separately in order to determine the best possible setup of parameters for the benchmark comparison between quantum and classical.
+
+In order to determine the number of qubits utilized by the latent layer in question, we ran a series of model trainings with a fixed ansatz and varying only the number of qubits within the layer. For each version of the model with a specified number of qubits, we ran a total of 20 training runs in order to statistically determine the best model on average. The ansatz used as reference for these runs is the Strongly Entangling layers ansatz. The simulations were conducted utilizing statevector simulations and the results can be observed on the graph below.
+
+IMAGEM
+
+As seen above, the layer comprised of 8 qubits has presented a performance close to the best performing qubit count, while being considerably computationally less expensive to simulate than the 11 qubits proposal. Due to the observations obtained from this experiment, we then fixed 8 qubits as a reference for further tests.
+
+Following the selection of a specific number of qubits, we then ran tests in order to determine the number of shots to be used on our final evaluation. For such exploration, we fixed the number of qubits to 8, and also fixed the ansatz used to Real Amplitudes. For the shot based simulations such as this, 
+we utilized the SPSA optimizer for weight optimization.{ESSE PARÁGRAFO PRECISA DE VALIDAÇÃO}
+
+In order to evaluate how the number of shots affected our model overall performance, we ran tests with 10, 256, 1024 and 4096 shots utilizing the Estimator with MPS simulator and compared these in between themselves and with a statevector simulation. 
+
+IMAGEM 
+
+As observed above, ideally, 4096 shots are capable of approximating the performance of a statevector, being the best candidate in terms of model performance. Values such as 1024 and below present a considerably lower performance and a higher standard deviation, therefore, demonstrating a more unstable training behaviour.
+
+
+As our final comparison, we compare the overall performance of the model among three possible available ansatze, being these the Real Amplitudes with full entanglement, Two Local and Heisenberg Ansatze. On these runs, the only difference between the models is the ansatz used, all of them being therefore fixed with 8 qubits and 4096 shots.
+
+IMAGEM
+
+DISCUÇÃO - PENDENDO RESULTADOS
+
+\subsection{Comparison between quantum and classical networks}
+As established on the previous sections, we compare the overall performance of the best performing hybrid neural network with the performance of the classical equivalent neural network in order to clarify what can we observe in terms of behavior and performance change. As per the graph below, we can observe that the results remain very similar overall, with small moments that distinguish among the two, indicating that on both scenarios, the models tend to follow the same optimization route.
+
+\subsection{Hardware inference}
+
+\section{Conclusion}
+
+\section{Citations}
+
+
+\bibliographystyle{splncs04}
+\bibliography{references}
+
+\end{document}
