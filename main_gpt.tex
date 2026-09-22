@@ -182,128 +182,32 @@ Starting from the EI3 convolutional policy available in RLPortfolio~\cite{RLport
 \subsection{Portfolio optimisation as a reinforcement-learning problem}
 \label{subsec:bg-portfolio}
 
-In the formulation of Jiang et al.~\cite{jiang2017}, capital allocation is cast
-as a deterministic policy that maps a window of recent price history to a weight
-vector on the simplex. The state is a tensor of price-derived features across
-assets and time; the action is the target allocation; and the reward is the
-logarithmic growth of portfolio value net of transaction costs, so that the
-objective optimised by policy gradient is the cumulative log-return of the
-episode.
+Portfolio optimisation is naturally sequential: an agent observes a market state, chooses a portfolio allocation, incurs transaction costs when rebalancing, and then receives a reward determined by the subsequent evolution of asset prices. Deep reinforcement learning (DRL) therefore offers a model-free way to learn dynamic allocation policies without requiring an explicit parametric model of returns. A widely used formulation is due to Jiang et al.~\cite{jiang2017deepreinforcementlearningframework}, who introduced the Ensemble of Identical Independent Evaluators (EIIE), Portfolio-Vector Memory, and a transaction-cost-aware objective for cryptocurrency portfolio management. RLPortfolio later provided an open implementation of this class of environments and policy-gradient agents, including the EI3 architecture used as the classical starting point in this work~\cite{RLportfolio}.
 
-The architecture underpinning this formulation is the Ensemble of Identical
-Independent Evaluators (EIIE). Each asset is scored by a weight-sharing network
-applied independently along the asset axis, and the scores are normalised into
-an allocation. Weight sharing has two consequences that matter here: the
-evaluation of an asset does not depend on its index within the universe, and the
-network generalises across universes of different cardinality. Two further
-mechanisms are inherited by all models in this paper --- the feedback of the
-previous weight vector, which allows the agent to price the cost of rebalancing,
-and convolutions along the temporal axis, which compress each asset's history
-into a compact representation. EI3~\cite{costa2023} extends EIIE with a
-three-headed convolutional block that aggregates short-, medium- and long-term
-temporal structure, and was evaluated on Brazilian equities, which makes it the
-natural baseline for the present testbed.
+Recent literature has extended DRL portfolio methods to risk-aware and high-dimensional settings. For example, Jiang, Olmo and Atwi embed transaction costs and risk aversion into a TD3-based allocation framework and report strong empirical performance on large equity universes~\cite{Jiang2024DRLPortfolioSelection}. At the same time, the broader evidence is mixed. A recent taxonomy and experimental review documents substantial heterogeneity in datasets, reward definitions, evaluation protocols and baselines across the portfolio-RL literature~\cite{Rezaei2025DRLPortfolioReview}. More importantly, Kruthof and M\"uller evaluate Soft Actor-Critic across seven equity datasets and find no systematic advantage over a $1/N$ benchmark; modest transaction costs can eliminate apparent gains because of high turnover~\cite{Kruthof2025CanDRLBeat1N}. These results motivate two design choices in the present study: comparisons should be made under matched environments and costs, and conclusions should be based on distributions over independent training runs rather than isolated trajectories.
 
-\subsection{Parameterised quantum circuits as trainable layers}
+\subsection{Parameterized quantum circuits as trainable function approximators}
 \label{subsec:bg-pqc}
 
-A PQC used as a neural-network layer is characterised by three choices: how
-classical data enters the circuit, how the trainable unitary is structured, and
-what is measured~\cite{benedetti2019,cerezo2021}. In the angle-embedding scheme
-adopted here, a real-valued feature vector $x \in \mathbb{R}^{Q}$ is written
-into a $Q$-qubit register through single-qubit rotations $R_Y(x_i)$ applied to
-$\lvert 0 \rangle^{\otimes Q}$. A variational unitary $U(\theta)$, alternating
-layers of trainable rotations with entangling gates, then acts on the encoded
-state, and the layer output is a vector of expectation values of local
-observables, here $\langle Z_i \rangle$ on each qubit.
+In near-term quantum machine learning, parameterized quantum circuits (PQCs) are commonly used as differentiable function approximators embedded in hybrid quantum--classical models~\cite{Benedetti2019Parameterizedquant,Cerezo2021Variationalquantum}. A typical PQC layer comprises three elements: a data-encoding map, a trainable unitary, and a measurement rule that converts the final quantum state into classical outputs. In the present work, classical latent features are encoded through single-qubit rotations, followed by a trainable entangling circuit, and local Pauli-$Z$ expectation values are returned to the classical policy network.
 
-Two structural properties of this construction govern the behaviour reported in
-\ref{sec:results} and deserve emphasis.
+The choice of data encoding is not merely an implementation detail. Schuld, Sweke and Meyer showed that variational quantum models can be written as partial Fourier series in the encoded variables, with the accessible frequencies determined by the generators used for data encoding and by how often the data are re-uploaded~\cite{Schuld2021Effectofdataencodi}. Re-uploading can systematically enrich this frequency spectrum and increase the family of functions representable by small circuits~\cite{PrezSalinas2020Datareuploadingfor}. Consequently, increasing the number of qubits does not by itself guarantee a richer dependence on each encoded variable; circuit width, data encoding, entangling structure and re-uploading play distinct roles in expressivity.
 
-\paragraph{The output is bounded and smooth.}
-Each component of the output is an expectation value of a Pauli observable and
-therefore lies in $[-1,1]$ by construction, with derivatives with respect to
-both inputs and parameters that are bounded trigonometric functions. A PQC
-layer is thus intrinsically a saturating, Lipschitz-controlled map --- closer in
-character to a $\tanh$ bottleneck than to an unconstrained affine layer --- and
-this is true regardless of the ansatz chosen.
+Trainability introduces a second constraint. Random or highly expressive variational circuits may exhibit barren plateaus, in which gradients concentrate near zero as the system size grows~\cite{McClean2018Barrenplateausinqu,Holmes2022ConnectingAnsatzEx}. The measurement rule also matters: for broad classes of shallow layered ans\"atze, global cost observables can induce exponentially vanishing gradients, whereas local observables can have substantially more favorable scaling under appropriate depth assumptions~\cite{Cerezo2021Costfunctiondepend}. Our use of local $\langle Z_i\rangle$ readout is therefore motivated not only by interface compatibility with a classical latent layer, but also by the better-understood trainability of local measurements. Because each Pauli expectation value lies in $[-1,1]$, the quantum block also produces a bounded latent representation; however, bounded output alone should not be interpreted as evidence of a uniquely quantum regularization effect.
 
-\paragraph{The accessible function class is set by the encoding, not by the
-register size.}
-As shown by Schuld et al.~\cite{schuld2021encoding}, a variational model of this
-form is a truncated Fourier series in the encoded variables, and the set of
-accessible frequencies is determined by the eigenvalue spectrum of the encoding
-generators and by how many times the data is re-uploaded --- not by the number
-of qubits. With a single layer of $R_Y(x_i)$ rotations and no re-uploading, each
-input variable enters with frequencies in $\{-1,0,1\}$, so every output
-component is a low-degree trigonometric polynomial in its inputs. Widening the
-register adds inputs and outputs, and adds entanglement between them, but does
-not enrich the frequency content of the map. This is the theoretical basis for
-the prediction --- confirmed in \ref{subsec:res-qubit-width} --- that the
-performance of our hybrid agent should be largely flat in the number of qubits
-under this encoding, and it is also the reason why we do not interpret such
-flatness as evidence that the block is inert.
-
-We adopt RealAmplitudes as the variational form: alternating layers of
-trainable $R_Y$ rotations separated by CNOT entanglement, with real-valued
-amplitudes throughout. We specify the configuration in full --- one repetition
-($\text{reps} = 1$) and an all-to-all entanglement pattern
-($\text{entanglement} = \texttt{full}$) --- because it departs from the default
-of the library implementation, which is \texttt{reverse\_linear}. The
-distinction is material rather than pedantic: at eight qubits the default
-pattern produces seven CNOTs where ours produces twenty-eight, so a
-reproduction attempt using library defaults would train a different circuit
-under the same name. Gate counts for every configuration evaluated are reported
-in \ref{tab:quantum-configs}, and the corresponding transpiled cost in
-\ref{tab:transpiled}.
-
-One structural consequence of $\text{reps} = 1$ should be stated here because
-it recurs in the interpretation of the results. With a single repetition the
-circuit is $R_Y(w_0 \ldots w_{Q-1})$, followed by the entangling layer,
-followed by $R_Y(w_Q \ldots w_{2Q-1})$: no trainable parameter sits between the
-two-qubit gates. The entangling layer is therefore a \emph{fixed} unitary, and
-the choice of pattern does not alter the number of degrees of freedom of the
-model --- both \texttt{full} and \texttt{linear} carry $2Q$ parameters. What the
-pattern changes is which fixed basis change is interposed between the two
-rotation layers, and hence the geometry of the reachable set, not the capacity
-of the family. The all-to-all pattern carries $\binom{Q}{2}$ CNOTs against
-$Q-1$ for the linear one, so its two-qubit-gate count grows quadratically in
-the register width; that growth is the dominant term in the simulation cost of
-our campaign and motivates restricting the qubit sweep to $Q \in \{2,4,8\}$. At
-the narrowest register the question does not arise at all: with two qubits
-there is a single pair, so every entanglement pattern collapses to the same
-circuit with one CNOT.
-
-Finally, the choice of local $\langle Z_i \rangle$ readout, rather than a
-measurement of the full $2^Q$-dimensional distribution, is deliberate. It keeps
-the output dimension of the block equal to $Q$, so that the block is a drop-in
-replacement for a dense layer of $Q$ neurons; it avoids the exponential
-classical post-processing that a full-distribution readout would impose; and
-local observables are the setting in which the training landscape is best
-behaved, since global observables are associated with more severe barren
-plateaus~\cite{mcclean2018,cerezo2021}.
-
-\subsection{Quantum and hybrid reinforcement learning}
+\subsection{Variational quantum reinforcement learning}
 \label{subsec:bg-qrl}
 
-Work on variational quantum policies has established that PQCs can serve as
-function approximators inside standard RL algorithms, both as policies trained
-by policy gradient~\cite{jerbi2021} and as value functions trained by
-$Q$-learning~\cite{skolik2022}. The reported evidence is encouraging in terms of
-parameter efficiency --- comparable behaviour with far fewer trainable
-parameters --- but the benchmarks are dominated by low-dimensional control
-tasks, and the experimental protocols frequently report few independent runs.
+Quantum reinforcement learning (QRL) covers several distinct paradigms, including fault-tolerant algorithms with quantum access to the environment and near-term hybrid schemes in which PQCs replace classical function approximators inside otherwise classical RL loops~\cite{Meyer2022SurveyQuantumRL}. The latter is the regime relevant here. Chen et al. demonstrated variational quantum circuits as trainable value-function approximators for deep RL~\cite{Chen2020VariationalQuantumCi}; Jerbi et al. introduced parametrized quantum policies and proved learning advantages for specially constructed problem families while also demonstrating standard benchmark tasks~\cite{Jerbi2021ParametrizedQuantumP}; Skolik, Jerbi and Dunjko developed variational deep Q-learning agents~\cite{Skolik2022QuantumagentsintheGy}; and Sequeira, Santos and Barbosa studied policy-gradient agents with variational circuits and the associated sampling and trainability properties~\cite{Sequeira2023Policygradientsusing}.
 
-Applications to finance, and to portfolio optimisation in particular, remain
-sparse and are typically restricted to small universes or short horizons,
-because simulating a PQC inside the inner loop of an RL algorithm multiplies the
-cost of an already expensive training procedure. The gap this paper addresses is
-not the existence of hybrid RL agents for finance, but the absence of an
-identified measurement of what the quantum block does: a design in which the
-quantum and classical models differ in one block and one block only, evaluated
-over enough independent runs to speak about distributions, in a simulation
-regime that does not confound architectural effects with sampling noise.
+These results establish feasibility, but they do not establish a generic practical advantage for PQC-based RL. Hardware and finite-shot noise can alter both training and evaluation behavior~\cite{Skolik2023Robustnessofquantumr}. More importantly, recent benchmarking work has emphasized that parameter-count comparisons are insufficient and that claims of outperformance depend critically on statistical validation, sample complexity and the strength of the classical baseline. Meyer et al. propose a statistical benchmarking methodology and show that several apparent QRL advantages become more nuanced under controlled evaluation~\cite{Meyer2025BenchmarkingQuantumR}. Kruse et al. reach a similar conclusion when comparing multiple QRL families and explicitly question whether advantage persists beyond artificial problem constructions~\cite{Kruse2025BenchmarkingQuantumRL}. This motivates treating the quantum circuit in this paper as an alternative policy parameterization whose behavioral effect must be measured, rather than as an a priori superior learner.
 
+\subsection{Quantum reinforcement learning in finance}
+\label{subsec:bg-qrl-finance}
+
+Applications of QRL to financial decision making are only beginning to move beyond toy environments. Chen, Zhang and Chen study a hybrid PPO trading agent for sector rotation and report an important negative result: quantum-enhanced models obtain higher training rewards but underperform classical alternatives on investment metrics such as cumulative return and Sharpe ratio, illustrating the danger of reward--objective mismatch in financial RL~\cite{chen2025quantumreinforcementlearningtrading}. More recently, Gurgul, Chen and Lessmann propose variational QRL analogues of DDPG and DQN for dynamic portfolio optimisation and report risk-adjusted performance comparable to, and sometimes above, much larger classical models, while also documenting substantial end-to-end latency on cloud quantum hardware~\cite{Gurgul2026QRLPortfolio}. Both studies are valuable, but neither by itself resolves whether observed differences originate from the quantum parameterization, from model capacity, from training stochasticity, or from details of the experimental protocol.
+
+The present work is positioned around that identification problem. Rather than asking whether a quantum agent ``wins'' a portfolio benchmark, we isolate a single latent block inside one policy architecture and keep the rest of the RL pipeline fixed. We then compare no-layer, classical-layer and quantum-layer variants over repeated independent runs, and separately study register width and finite-shot effects. This design directly targets a gap highlighted by the recent QRL benchmarking literature: without matched architectures, repeated runs and statistical validation, architectural claims are difficult to distinguish from ordinary RL variance.
 
 % =====================================================================
 \section{Experimental testbed}
