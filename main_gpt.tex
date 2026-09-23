@@ -157,20 +157,12 @@ Hybrid quantum-classical models provide a practical framework for studying param
 \section{Introduction}
 \label{sec:introduction}
 
-Quantum machine learning (QML) studies how quantum information processing can be used within
-learning algorithms, ranging from fault-tolerant quantum algorithms to near-term hybrid
-models based on parameterized quantum circuits
-(PQCs)~\cite{Biamonte2017Quantummachinelear,Benedetti2019Parameterizedquant,Cerezo2021Variationalquantum}.
-For the latter, a quantum circuit acts as a trainable function approximator embedded in an
-otherwise classical learning pipeline. This paradigm has motivated results on quantum
-feature spaces~\cite{Schuld2019QuantumMachineLear,Havlek2019Supervisedlearning}, quantum
+Quantum machine learning (QML) studies how quantum information processing can be used within learning algorithms, ranging from fault-tolerant quantum algorithms to near-term hybrid models based on parameterized quantum circuits (PQCs)~\cite{Biamonte2017Quantummachinelear,Benedetti2019Parameterizedquant,Cerezo2021Variationalquantum}.
+For the latter, a quantum circuit acts as a trainable function approximator embedded in an otherwise classical learning pipeline. This paradigm has motivated results on quantum feature spaces~\cite{Schuld2019QuantumMachineLear,Havlek2019Supervisedlearning}, quantum
 neural networks~\cite{Abbas2021Thepowerofquantumn}, and the role of data encoding in
-determining the functions accessible to variational
-models~\cite{Schuld2021Effectofdataencodi}. At the same time, the QML literature makes clear
+determining the functions accessible to variational models~\cite{Schuld2021Effectofdataencodi}. At the same time, the QML literature makes clear
 that expressive quantum models are not by themselves evidence of a practical quantum
-advantage: trainability, data access, fair classical baselines, and classical simulability
-can determine whether an apparent advantage survives careful
-comparison~\cite{Huang2021Powerofdatainquant,Tang2022Dequantizingalgori,McClean2018Barrenplateausinqu}.
+advantage: trainability, data access, fair classical baselines, and classical simulability can determine whether an apparent advantage survives careful comparison ~\cite{Huang2021Powerofdatainquant,Tang2022Dequantizingalgori,McClean2018Barrenplateausinqu}.
 
 Financial applications provide a concrete setting in which several quantum-computing
 paradigms are being explored, including optimization, stochastic modelling, and machine
@@ -203,9 +195,7 @@ constructed problem families, theoretical separations from restricted classical 
 be obtained. They do not, however, establish a generic practical advantage for variational
 QRL. In particular, architectural and hyperparameter choices can dominate parameter-count
 comparisons~\cite{Skolik2022QuantumagentsintheGy}, and recent benchmarking work has shown
-that conclusions of quantum outperformance can change materially when statistical
-uncertainty and sample complexity are treated
-explicitly~\cite{Meyer2025BenchmarkingQuantumR}. We therefore use ``quantum'' here to
+that conclusions of quantum outperformance can change materially when statistical uncertainty and sample complexity are treated explicitly~\cite{Meyer2025BenchmarkingQuantumR}. We therefore use ``quantum'' here to
 identify the parameterization of one component of the policy, not as a claim of quantum
 advantage.
 
@@ -481,9 +471,7 @@ difference.
 % GPT-REVIEW: The current manuscript describes repeated-run distributions, but the
 % inferential procedure used to compare means and/or dispersions must be stated
 % explicitly if statistical significance is claimed later.
-\textcolor{red}{REVIEW: specify the statistical test or interval-estimation
-procedure used for between-model comparisons, including whether multiple comparisons are
-corrected. If no inferential test was performed, keep all claims descriptive and avoid terms
+\sam{REVIEW: specify the statistical test or interval-estimation procedure used for between-model comparisons, including whether multiple comparisons are corrected. If no inferential test was performed, keep all claims descriptive and avoid terms
 such as statistically significant.}
 
 Two sets of training hyperparameters are used (\ref{tab:hyperparams}). The
