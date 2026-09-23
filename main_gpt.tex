@@ -504,7 +504,9 @@ published training conditions.
 
 \begin{table}[htbp]
   \centering
-  \caption{Training hyperparameters under the two evaluated protocols.}
+  \caption{Training hyperparameters for the two protocols used in the experiments. The EI3 reference
+  configuration follows the settings of the reference implementation; the unified protocol
+  is used for the scaffold and latent-block comparisons described below.}
   \label{tab:hyperparams}
   \begin{tabular}{lcc}
     \toprule
@@ -568,18 +570,14 @@ weights.
 \begin{figure*}[htbp]
   \centering
   \includegraphics[width=0.85\linewidth]{figuras_finais/fig1_ei3_original.png}
-  \caption{Reference EI3 architecture, as reproduced in this work. The
-  observation tensor of dimensions $3 \times 10 \times 50$ (features $\times$
-  assets $\times$ time window) enters a three-headed convolutional block: a
-  short-term head (Conv $1\times3$ followed by Conv $1\times48$), a mid-term
-  head (Conv $1\times21$ followed by Conv $1\times30$), both with ReLU
-  activations, and a long-term head implemented as a MaxPool $1\times50$. The
-  three outputs are concatenated with the previous portfolio weights $a_{t-1}$
-  into a \num{44}-channel representation, which a final $1\times1$ convolution
-  reduces to eleven scores --- the ten assets plus the cash position, held at
-  zero --- normalised by a softmax into the allocation vector
-  $w_t \in \Delta^{10}$. The network has \num{4987} trainable parameters. The
-  proposed variants preserve this block and act only on what follows it.}
+  \caption{Reference EI3 architecture reproduced in this work. The observation tensor has dimensions
+  $3\times10\times50$ (features $\times$ assets $\times$ time window) and is processed by
+  three temporal branches: short term (Conv $1\times3$ followed by Conv $1\times48$), medium
+  term (Conv $1\times21$ followed by Conv $1\times30$), and long term (MaxPool $1\times50$).
+  Their outputs are concatenated with the previous portfolio weights $a_{t-1}$ into a
+  \num{44}-channel representation. A final $1\times1$ convolution produces eleven scores,
+  corresponding to ten assets and the cash position, and softmax maps them to the allocation
+  vector $w_t\in\Delta^{10}$. The reproduced network has \num{4987} trainable parameters.}
   \label{fig:arch-ei3}
 \end{figure*}
 
@@ -647,16 +645,13 @@ for the behaviour observed later.
 \begin{figure*}[htbp]
   \centering
   \includegraphics[width=\linewidth]{figuras_finais/fig4_nolayer.png}
-  \caption{The No-Layer scaffold, QEI3-eq NoCL. The architecture is that of
-  QEI3-eq (\ref{fig:arch-classical}) with the latent block removed: the latent
-  projection, with its $\pi\tanh(\cdot)$ scaling, feeds the MLP head directly.
-  Convolutional block, projection, decision head and softmax are unchanged. This
-  construction is used as the closest architectural reference for assessing the
-  addition of the latent block, without by itself establishing a causal effect. The ablation removes six parameters,
-  \num{5038} against \num{5044} for QEI3-eq in the two-wide instance drawn here,
-  which keeps the total parameter counts close in this two-wide comparison.}
-  % GPT-REVISION: Replaced "essentially the same capacity". Similar parameter
-  % count does not establish equal function-class capacity.
+  \caption{No-Layer scaffold (QEI3-eq NoCL). The convolutional block and latent projection are
+  retained, including the $\pi\tanh(\cdot)$ scaling, but the interchangeable latent block is
+  omitted and the projected representation is passed directly to the MLP decision head. In
+  the two-wide configuration shown, the model has \num{5038} trainable parameters, compared
+  with \num{5044} for QEI3-eq. This scaffold is used as the architectural reference for
+  evaluating the addition of a latent block; the comparison alone does not identify a causal
+  effect.}
   \label{fig:arch-nolayer}
 \end{figure*}
 
@@ -676,20 +671,12 @@ $5\times10^{3}$ in the surrounding network.
 \begin{figure*}[htbp]
   \centering
   \includegraphics[width=\linewidth]{figuras_finais/fig2_classical_ours.png}
-  \caption{Architecture of the proposed classical model, QEI3-eq. The
-  convolutional block is inherited from EI3 (\ref{fig:arch-ei3}): the
-  observation tensor of dimensions $3 \times 10 \times 50$ is processed by a
-  short-term head (Conv $1\times3$ followed by Conv $1\times48$), a mid-term
-  head (Conv $1\times21$ followed by Conv $1\times30$) and a long-term head
-  (MaxPool $1\times50$), whose outputs are concatenated with the previous
-  portfolio weights $a_{t-1}$ and reduced by a $1\times1$ convolution to eleven
-  channels. A latent projection --- a fully connected layer followed by a
-  $\pi\tanh(\cdot)$ scaling that constrains the values to $[-\pi,\pi]$ --- feeds
-  the latent block, here a classical surrogate of the quantum layer implemented
-  as a $Q\times Q$ linear transformation followed by $\tanh$. An MLP head of three fully connected layers
-  and a softmax produces the allocation vector $w_t \in \Delta^{10}$. The
-  configuration drawn is the two-wide one, with projection $11\to2$ and a
-  $2\times2$ linear surrogate, totalling \num{5044} trainable parameters.}
+  \caption{Classical QEI3-eq architecture. The EI3 convolutional representation is reduced to eleven
+  channels and projected to a latent vector of width $Q$; $\pi\tanh(\cdot)$ bounds the
+  projected values to $[-\pi,\pi]$. The classical latent block is a $Q\times Q$ linear
+  transformation followed by $\tanh$, after which a three-layer MLP and softmax produce the
+  allocation vector $w_t\in\Delta^{10}$. The diagram shows $Q=2$, with projection $11\to2$
+  and a $2\times2$ latent transformation, for a total of \num{5044} trainable parameters.}
   \label{fig:arch-classical}
 \end{figure*}
 
@@ -721,51 +708,35 @@ two models.
 \begin{figure*}[htbp]
   \centering
   \includegraphics[width=\linewidth]{figuras_finais/fig3_quantum_ours_q8.png}
-  \caption{Architecture of the proposed hybrid model, QEI3, in the
-  \num{8}-qubit configuration. Convolutional block and decision head are those
-  of QEI3-eq (\ref{fig:arch-classical}); the latent block alone is replaced by
-  a quantum neural network. The latent projection maps the eleven convolutional
-  channels to eight angles in $[-\pi,\pi]$, which the angle embedding $E(x)$
-  writes into an eight-qubit register prepared in $\lvert 0 \rangle$; the
-  variational unitary $U(\theta)$ is a RealAmplitudes ansatz with a single
-  repetition and a full entanglement pattern, and the block is read out through
-  the expectation values $\langle Z_i \rangle$ of the Pauli-$Z$ operator on each
-  qubit. The eight resulting values feed an MLP head ($8\to16$, $16\to16$,
-  $16\to11$) and a softmax. The model has \num{5702} trainable parameters, of
-  which \num{16} are circuit parameters~$\theta$.}
+  \caption{Hybrid QEI3 architecture for $Q=8$ qubits. The classical scaffold is unchanged except for
+  the latent block. The projection produces eight values in $[-\pi,\pi]$, which are encoded
+  through $R_Y$ rotations. A RealAmplitudes circuit with one repetition and full
+  entanglement is then applied, and local expectation values $\langle Z_i\rangle$ provide
+  the eight outputs passed to the MLP decision head. This configuration has \num{5702}
+  trainable model parameters, including \num{16} variational circuit parameters.}
   \label{fig:arch-quantum}
 \end{figure*}
 
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=0.9\linewidth]{figuras_finais/fig5_circuit_q2.png}
-  \caption{Variational circuit of the latent block for $Q = \num{2}$ qubits,
-  one repetition ($L = 1$) and full entanglement. Each qubit first receives an
-  $R_Y$ rotation whose angle carries one component of the projected input
-  (angle embedding $E(x)$). The RealAmplitudes ansatz $U(\theta)$ then applies a
-  layer of trainable $R_Y$ rotations, a CNOT entangling the pair, and a second
-  layer of trainable $R_Y$ rotations, giving four circuit weights and a single
-  CNOT. The block is read out through $\langle Z_i \rangle$ on each qubit.}
+  \caption{Variational latent circuit for $Q=2$, one RealAmplitudes repetition, and full
+  entanglement. Projected inputs are encoded with $R_Y$ rotations. The variational block
+  then applies trainable $R_Y$ rotations, one CNOT, and a second trainable $R_Y$ layer. The
+  circuit therefore contains four trainable circuit parameters and one CNOT before
+  measurement of the local observables $\langle Z_i\rangle$.}
   \label{fig:circuit-q2}
 \end{figure}
 
 \begin{figure*}[htbp]
   \centering
   \includegraphics[width=\linewidth]{figuras_finais/fig5_circuit_q8.png}
-  \caption{The same circuit at $Q = \num{8}$ qubits. The structure is unchanged
-  --- angle embedding, trainable $R_Y$ layer, entanglement, second trainable
-  $R_Y$ layer, and readout in $\langle Z_i \rangle$ --- but full entanglement
-  now requires one CNOT for every pair of qubits: the circuit carries \num{16}
-  weights and \num{28} CNOTs, against \num{4} weights and a single CNOT at two
-  qubits (\ref{fig:circuit-q2}). This growth of the entangling layer, quadratic
-  in the number of qubits, is what makes the simulation cost rise steeply with
-  the width of the latent block, and motivates the restriction of the qubit
-  sweep to \num{2}, \num{4} and \num{8} qubits. The pattern is stated explicitly
-  throughout because it is not the default of the library implementation: under
-  \texttt{reverse\_linear} the same specification would yield seven CNOTs at
-  this width. Since $\text{reps} = 1$ places no trainable parameter between the
-  two-qubit gates, the two patterns carry the same \num{16} parameters and
-  differ only in the fixed entangler applied.}
+  \caption{Variational latent circuit for $Q=8$ with the same encoding and RealAmplitudes
+  specification as in \ref{fig:circuit-q2}. With one repetition and full entanglement, the
+  logical circuit contains \num{16} trainable circuit parameters and \num{28} CNOTs. For
+  comparison, the $Q=2$ circuit contains four trainable circuit parameters and one CNOT.
+  These are logical gate counts before transpilation and do not represent hardware execution
+  cost.}
   \label{fig:circuit-q8}
 \end{figure*}
 
@@ -792,12 +763,11 @@ The quantum configurations evaluated are listed in
 
 \begin{table}[htbp]
   \centering
-  \caption{Quantum configurations evaluated. The ansatz is RealAmplitudes with
-  $\text{reps} = 1$ and $\text{entanglement} = \texttt{full}$ in every
-  configuration; gate counts are those of the logical circuit, before
-  transpilation to any device connectivity (see \ref{tab:transpiled} for the
-  transpiled cost). All expectation values are computed exactly; seeds follow
-  \ref{eq:seed-rule}.}
+  \caption{Quantum configurations evaluated in the register-width experiment. All use RealAmplitudes
+  with $\mathrm{reps}=1$ and $\mathrm{entanglement}=\texttt{full}$. Parameter and CNOT
+  counts refer to the logical circuits before device-specific transpilation. Expectation
+  values are evaluated exactly with the statevector procedure described in the text. The
+  pseudorandom streams follow \ref{eq:seed-rule}.}
   \label{tab:quantum-configs}
   \begin{tabular}{lccccc}
     \toprule
@@ -842,16 +812,16 @@ reporting repeated-run distributions rather than relying on a single trained age
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=\linewidth]{fig1_ei3_original.png}
-  \caption{Original EI3 architecture under three training configurations: the
-  reference implementation, a short schedule with a small batch (\num{50}
-  episodes, batch \num{8}), and a long schedule with a large batch (\num{120}
-  episodes, batch \num{200}). Solid lines show the mean portfolio
-  value over the test period and shaded envelopes denote $\pm 1$ standard
-  deviation across $n = 20$ independent runs per configuration; the dashed grey
-  line marks the initial capital of \num{100000} monetary units. Mean final
-  values are \num{192638}, \num{216122} and \num{224138} monetary units
-  respectively, with standard deviations of \num{31608}, \num{28132} and
-  \num{55409}. The omnibus Kruskal--Wallis test detects a difference among the three final-value distributions ($H(2) = 7.66$, $p = 0.022$, $\varepsilon^2 = 0.099$). The longest schedule has the highest observed mean and the largest observed standard deviation among these three configurations.}
+  \caption{EI3 under the three evaluated training configurations: the reference implementation, a
+  short schedule with a small batch (\num{50} episodes; batch size \num{8}), and a long
+  schedule with a large batch (\num{120} episodes; batch size \num{200}). Solid lines show
+  the mean portfolio value over the 2020 evaluation window and shaded regions show $\pm1$
+  sample standard deviation across \num{20} training runs. The dashed line marks the initial
+  capital of \num{100000} monetary units. Mean final values are \num{192638}, \num{216122},
+  and \num{224138}, with sample standard deviations of \num{31608}, \num{28132}, and
+  \num{55409}, respectively. An omnibus Kruskal--Wallis test detects a difference among the
+  three final-value distributions ($H(2)=7.66$, $p=0.022$, $\varepsilon^2=0.099$); the test
+  alone does not identify which pairs differ.}
   \label{fig:ei3-original}
 \end{figure}
 
@@ -882,12 +852,12 @@ retain only the descriptive statement about the observed dispersion.}
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=\linewidth]{fig2_no_layer.png}
-  \caption{Experimental campaign of the QEI3-eq NoCL scaffold: the \num{20}
-  independent runs are drawn individually in light strokes behind their mean
-  trajectory (bold), over the same 2020 evaluation window and initial capital as
-  the remaining figures. Final values range from \num{140902} to \num{375011} monetary units, with
-  mean \num{280563} and standard deviation \num{82410}; the individual
-  trajectories are shown to make the run-to-run variation visible.}
+  \caption{QEI3-eq NoCL scaffold over the 2020 evaluation window. Light curves show the \num{20}
+  individual training runs and the bold curve their mean trajectory. All runs start from
+  \num{100000} monetary units. Final values range from \num{140902} to \num{375011}, with
+  mean \num{280563} and sample standard deviation \num{82410}. The individual trajectories
+  are shown to expose the run-to-run variability rather than to imply a common policy
+  structure.}
   \label{fig:no-layer}
 \end{figure}
 
@@ -914,14 +884,13 @@ the classical latent block is intended.}
 \begin{figure}[t]
   \centering
   \includegraphics[width=\linewidth]{fig3_classica_neuronios.png}
-  \caption{Effect of the width of the classical latent layer on the proposed
-  classical architecture: QEI3-eq NoCL, without the layer (\num{0} neurons), and
-  QEI3-eq with a layer of \num{8} neurons, the width that matches the number of
-  qubits of the quantum counterpart. Solid lines show the mean out-of-sample
-  portfolio value and shaded envelopes denote $\pm 1$ standard deviation across
-  $n = 20$ independent runs per configuration. Inserting the layer raises the
-  mean final value from \num{280563} to \num{301294} monetary units and lowers
-  the coefficient of variation from \num{0.29} to \num{0.22}, while no between-configuration inferential test is reported here.}
+  \caption{Comparison of the scaffold without a latent block (QEI3-eq NoCL) and QEI3-eq with an
+  eight-neuron classical latent block. Solid lines show mean portfolio value over the 2020
+  evaluation window and shaded regions show $\pm1$ sample standard deviation across \num{20}
+  training runs per configuration. The observed mean final value changes from \num{280563}
+  to \num{301294} monetary units and the coefficient of variation from \num{0.29} to
+  \num{0.22}. No between-configuration inferential test is reported for this comparison, so
+  these differences are descriptive.}
   \label{fig:layer-width}
 \end{figure}
 
@@ -963,17 +932,14 @@ unless computational cost is measured with a defined metric and included in the 
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=\linewidth]{fig4_quantica_qubits.png}
-  \caption{Quantum architecture under statevector simulation as a function of
-  the width of the quantum latent layer: \num{2}, \num{4} and \num{8} qubits.
-  Colour encodes the number of qubits on a single-hue scale, light to dark.
-  Solid lines show the mean portfolio value and shaded envelopes
-  denote $\pm 1$ standard deviation across $n = 20$ independent runs per
-  configuration. The three
-  Kruskal--Wallis test does not detect a difference among the final-value
-  distributions ($H(2) = 2.13$, $p = 0.345$, $\varepsilon^2 = 0.002$), with mean final values of
-  \num{373616}, \num{373668} and \num{369224} monetary units; the \num{8}-qubit
-  configuration is the most dispersed of the three (standard deviation
-  \num{11075} against \num{4327} and \num{4583}).}
+  \caption{Quantum QEI3 under exact statevector simulation for register widths $Q\in\{2,4,8\}$. Solid
+  lines show mean portfolio value over the 2020 evaluation window and shaded regions show
+  $\pm1$ sample standard deviation across \num{20} training runs per width. Mean final
+  values are \num{373616}, \num{373668}, and \num{369224} monetary units for $Q=2$, $4$, and
+  $8$, respectively. The Kruskal--Wallis test does not reject equality of the three
+  final-value distributions at conventional significance levels ($H(2)=2.13$, $p=0.345$;
+  reported $\varepsilon^2=0.002$). Because each width uses a different pseudorandom stream,
+  this experiment does not isolate a causal effect of register width.}
   \label{fig:qubit-variation}
 \end{figure}
 
@@ -994,21 +960,14 @@ differ in parameterization, this ordering is reported descriptively and is not i
 as a causal progression.
 \begin{table}[htbp]
   \centering
-  \caption{Summary of all experimental campaigns. Each row reports the
-  distribution of the final portfolio value (monetary units;
-  initial capital \num{100000}) at the end of the 2020 evaluation window, over
-  $n$ independent training runs. s.d.\ is the sample standard deviation
-  across runs and CV $= \mathrm{s.d.}/\text{mean}$ is the coefficient of
-  variation, used as the scale-free measure of run-to-run dispersion.
-  The first block characterises the EI3 baseline under three training
-  configurations; all remaining rows use the unified protocol of
-  table~\ref{tab:hyperparams} and differ only in the latent block:
-  absent (scaffold), a dense $\tanh$ layer (72 parameters at 8 neurons),
-  or a RealAmplitudes circuit with reps $=1$ and full entanglement
-  ($2Q$ parameters) evaluated with exact expectation values. Quantum
-  rows use the width-dependent seeds of eq.~\eqref{eq:seed-rule}, so
-  cross-model comparisons are between unpaired samples and are reported
-  descriptively.}
+  \caption{Summary of the experimental campaigns. Final portfolio values are reported in monetary
+  units relative to an initial capital of \num{100000}; s.d. is the sample standard
+  deviation across training runs and CV is $\mathrm{s.d.}/\mathrm{mean}$. The first block
+  reports EI3 under three training configurations. The remaining rows use the unified
+  protocol and compare the scaffold without a latent block, an eight-neuron classical latent
+  block, and RealAmplitudes quantum blocks with $Q\in\{2,4,8\}$. Quantum-width campaigns use
+  the pseudorandom streams defined in \ref{eq:seed-rule}; cross-model comparisons are
+  therefore reported descriptively unless an inferential test is stated explicitly.}
   \label{tab:summary}
   \begin{tabular}{lccccc}
     \toprule
@@ -1045,13 +1004,13 @@ interpretation.}
   \centering
   \includegraphics[width=\linewidth]{BenchmarkClassical.png}
   \textcolor{red}{REVIEW: retain this figure only if EI3, EIIE and the reference benchmark are defined in the Methods, trained/evaluated under a documented comparable protocol, and their run counts are reported. Otherwise remove the figure from the manuscript.}
-  \caption{Mean portfolio value across independent runs for the
-  classical baselines --- EI3, EIIE and the reference benchmark --- and the
-  proposed classical model. Solid lines show the mean trajectory over the test
-  period; shaded envelopes denote $\pm 1$ standard deviation across independent
-  training runs per model. All agents start from the same initial capital of
-  \num{100000} monetary units (dashed grey line) and are evaluated on an
-  identical 2020 evaluation window.}
+  \caption{Mean portfolio-value trajectories for the classical models included in this benchmark
+  figure over the 2020 evaluation window. Solid lines denote the mean trajectory and shaded
+  regions denote $\pm1$ sample standard deviation across the available training runs; the
+  dashed line marks the common initial capital of \num{100000} monetary units.
+  \textcolor{red}{REVIEW: before submission, retain this figure only if EI3, EIIE, the
+  reference benchmark, and the proposed classical model were evaluated with documented
+  comparable protocols and their run counts are reported explicitly.}}
   \label{fig:benchmark-classical}
 \end{figure}
 
