@@ -11,6 +11,7 @@
 \usepackage{ifsym}
 \usepackage{dsfont}
 \usepackage{enumerate}
+\usepackage{booktabs}
 \usepackage{amsfonts}
 \usepackage{multirow}
 \usepackage{mathtools}
@@ -285,8 +286,7 @@ window a strictly held-out out-of-sample test set.}
 \subsection{Training protocol, repetitions and summary statistics}
 \label{subsec:protocol}
 
-Because the variability of RL training across initialisations is of the same
-order as the effects under study, no configuration is characterised by a single
+Because the variability of RL training across initialisations is of the same order as the effects under study, no configuration is characterized by a single
 run. Each configuration is trained \num{20} times independently, drawing from a
 single pseudorandom stream seeded at the start of the batch and not
 reinitialised between runs, so that each run begins from a distinct
