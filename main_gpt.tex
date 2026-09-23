@@ -162,19 +162,19 @@
 \section{Introduction}
 \label{sec:introduction}
 
-Quantum machine learning (QML) studies how quantum information processing can be used within learning algorithms, ranging from fault-tolerant quantum algorithms to near-term hybrid models based on parameterized quantum circuits (PQCs)~\cite{Biamonte2017Quantummachinelear,Benedetti2019Parameterizedquant,Cerezo2021Variationalquantum}. For the latter, a quantum circuit acts as a trainable function approximator embedded in an otherwise classical learning pipeline. This paradigm has motivated results on quantum feature spaces~\cite{Schuld2019QuantumMachineLear,Havlek2019Supervisedlearning}, quantum neural networks~\cite{Abbas2021Thepowerofquantumn}, and the role of data encoding in determining the functions accessible to variational models~\cite{Schuld2021Effectofdataencodi}. At the same time, the QML literature makes clear that expressive quantum models are not by themselves evidence of a practical quantum advantage: trainability, data access, fair classical baselines, sampling cost, and classical simulability can determine whether an apparent advantage survives careful comparison~\cite{Huang2021Powerofdatainquant,Tang2022Dequantizingalgori,McClean2018Barrenplateausinqu}.
+Quantum machine learning (QML) studies how quantum information processing can be used within learning algorithms, ranging from fault-tolerant quantum algorithms to near-term hybrid models based on parameterized quantum circuits (PQCs)~\cite{Biamonte2017Quantummachinelear,Benedetti2019Parameterizedquant,Cerezo2021Variationalquantum}. For the latter, a quantum circuit acts as a trainable function approximator embedded in an otherwise classical learning pipeline. This paradigm has motivated results on quantum feature spaces~\cite{Schuld2019QuantumMachineLear,Havlek2019Supervisedlearning}, quantum neural networks~\cite{Abbas2021Thepowerofquantumn}, and the role of data encoding in determining the functions accessible to variational models~\cite{Schuld2021Effectofdataencodi}. At the same time, the QML literature makes clear that expressive quantum models are not by themselves evidence of a practical quantum advantage: trainability, data access, fair classical baselines, and classical simulability can determine whether an apparent advantage survives careful comparison~\cite{Huang2021Powerofdatainquant,Tang2022Dequantizingalgori,McClean2018Barrenplateausinqu}.
 
-Quantum reinforcement learning (QRL) brings these questions into the sequential decision-making setting. In variational QRL, PQCs have been used as trainable approximators for value functions and policies. Early demonstrations showed that variational circuits can be integrated into deep-RL pipelines~\cite{Chen2020VariationalQuantumCi}; subsequent work developed parametrized quantum policies~\cite{Jerbi2021ParametrizedQuantumP}, variational deep Q-learning agents~\cite{Skolik2022QuantumagentsintheGy}, and policy-gradient formulations~\cite{Sequeira2023Policygradientsusing}. These studies establish that compact quantum models can learn standard benchmark environments and, for specially constructed problem families, theoretical separations from restricted classical learners can be obtained. They do not, however, establish a generic practical advantage for variational QRL. In particular, architectural and hyperparameter choices can dominate parameter-count comparisons~\cite{Skolik2022QuantumagentsintheGy}; hardware and finite-shot noise introduce additional costs and stochasticity~\cite{Skolik2023Robustnessofquantumr}; and recent benchmarking work has shown that conclusions of quantum outperformance can change materially when statistical uncertainty and sample complexity are treated explicitly~\cite{Meyer2025BenchmarkingQuantumR}. We therefore use ``quantum'' here to identify the parameterization of one component of the policy, not as a claim of quantum advantage.
+Quantum reinforcement learning (QRL) brings these questions into the sequential decision-making setting. In variational QRL, PQCs have been used as trainable approximators for value functions and policies. Early demonstrations showed that variational circuits can be integrated into deep-RL pipelines~\cite{Chen2020VariationalQuantumCi}; subsequent work developed parametrized quantum policies~\cite{Jerbi2021ParametrizedQuantumP}, variational deep Q-learning agents~\cite{Skolik2022QuantumagentsintheGy}, and policy-gradient formulations~\cite{Sequeira2023Policygradientsusing}. These studies establish that compact quantum models can learn standard benchmark environments and, for specially constructed problem families, theoretical separations from restricted classical learners can be obtained. They do not, however, establish a generic practical advantage for variational QRL. In particular, architectural and hyperparameter choices can dominate parameter-count comparisons~\cite{Skolik2022QuantumagentsintheGy}, and recent benchmarking work has shown that conclusions of quantum outperformance can change materially when statistical uncertainty and sample complexity are treated explicitly~\cite{Meyer2025BenchmarkingQuantumR}. We therefore use ``quantum'' here to identify the parameterization of one component of the policy, not as a claim of quantum advantage.
 
 Portfolio management is a useful testbed for this distinction. Unlike a static allocation problem, sequential portfolio optimization requires a policy to repeatedly map evolving market observations and previous allocations into new portfolio weights while accounting for the consequences of rebalancing. Deep reinforcement learning provides a natural formulation of this problem~\cite{jiang2017deepreinforcementlearningframework}, and RLPortfolio provides an open implementation of this family of environments and policy-gradient agents~\cite{RLportfolio}. Yet RL also introduces a methodological difficulty that is particularly important for hybrid quantum--classical comparisons: training outcomes can vary substantially across random initializations. A difference between one quantum run and one classical run therefore does not identify an architectural effect.
 
 This work addresses a deliberately narrower question than whether QRL provides a quantum advantage for portfolio optimization: \emph{what changes in the behavior of an RL portfolio agent when a single latent block of its policy network is replaced by a PQC, while the remainder of the learning system is held fixed?} The distinction is important. Our experiments use exact statevector expectation values and small circuits that are classically simulable; consequently, they cannot demonstrate computational speedup, hardware advantage, or end-to-end resource advantage. Instead, the goal is to isolate the inductive effect of the variational block under controlled conditions and determine whether it changes the distribution of learned policies across independent training runs.
 
-To make that comparison identifiable, we impose three experimental commitments. First, the quantum and classical agents differ only in the latent block and share the same feature extractor, interfaces, decision head, reward, environment, data split, and training procedure. Second, each configuration is characterized by a distribution over independent training runs rather than by a single trajectory. Third, the quantum block is initially evaluated with exact expectation values, removing finite-shot and hardware noise so that stochastic variation is attributable to the learning procedure rather than quantum measurement. Finite-shot estimation is then treated as a separate resource and robustness question rather than being conflated with the architectural ablation.
+To make that comparison identifiable, we impose three experimental commitments. First, the quantum and classical agents differ only in the latent block and share the same feature extractor, interfaces, decision head, reward, environment, data split, and training procedure. Second, each configuration is characterized by a distribution over independent training runs rather than by a single trajectory. Third, the quantum block is evaluated using exact statevector expectation values throughout the experiments considered in this article.
 
-Starting from the EI3 convolutional policy available in RLPortfolio~\cite{RLportfolio}, itself descended from the EIIE formulation of Jiang et al.~\cite{jiang2017deepreinforcementlearningframework}, we construct a scaffold with an interchangeable latent representation. We compare three cases: no latent layer, a classical dense latent layer, and a PQC latent layer with matched input/output width. We then vary classical width, quantum register width, and measurement budget to determine which observed effects are attributable to the presence of the variational block and which depend on its scale or on expectation-value estimation.
+Starting from the EI3 convolutional policy available in RLPortfolio~\cite{RLportfolio}, itself descended from the EIIE formulation of Jiang et al.~\cite{jiang2017deepreinforcementlearningframework}, we construct a scaffold with an interchangeable latent representation. We compare three cases: no latent layer, a classical dense latent layer, and a PQC latent layer with matched input/output width. We then vary classical width and quantum register width to examine how the observed behavior changes with the scale of the latent representation.
 
-\sam{IMPROVE: The main contribution is therefore methodological and empirical rather than a claim of quantum superiority. We provide (i) a hybridization-ready reformulation of EI3 in which the latent-block ablation is identifiable; (ii) a repeated-run protocol that exposes the distribution of RL outcomes instead of relying on point comparisons; (iii) an empirical characterization of the effect of replacing the latent block by a variational circuit in the noiseless simulation limit; and (iv) tests of the sensitivity of this effect to register width and measurement sampling. In the experiments reported below, the most pronounced difference is a contraction of run-to-run dispersion rather than a statistically established improvement in mean return. We interpret that observation as a property of the tested architecture and training regime, and investigate its connection to the bounded, encoding-dependent function class of the variational block rather than treating it as evidence of quantum advantage.}
+\sam{IMPROVE: The main contribution is therefore methodological and empirical rather than a claim of quantum superiority. We provide (i) a hybridization-ready reformulation of EI3 in which the latent-block ablation is identifiable; (ii) a repeated-run protocol that exposes the distribution of RL outcomes instead of relying on point comparisons; (iii) an empirical characterization of the effect of replacing the latent block by a variational circuit in the noiseless simulation limit; and (iv) tests of the sensitivity of this effect to register width. In the experiments reported below, the most pronounced difference is a contraction of run-to-run dispersion rather than a statistically established improvement in mean return. We interpret that observation as a property of the tested architecture and training regime, and investigate its connection to the bounded, encoding-dependent function class of the variational block rather than treating it as evidence of quantum advantage.}
 % =====================================================================
 \section{Background and related work}
 \label{sec:background}
@@ -198,16 +198,16 @@ Trainability introduces a second constraint. Random or highly expressive variati
 \subsection{Variational quantum reinforcement learning}
 \label{subsec:bg-qrl}
 
-Quantum reinforcement learning (QRL) covers several distinct paradigms, including fault-tolerant algorithms with quantum access to the environment and near-term hybrid schemes in which PQCs replace classical function approximators inside otherwise classical RL loops~\cite{Meyer2022SurveyQuantumRL}. The latter is the regime relevant here. Chen et al. demonstrated variational quantum circuits as trainable value-function approximators for deep RL~\cite{Chen2020VariationalQuantumCi}; Jerbi et al. introduced parametrized quantum policies and proved learning advantages for specially constructed problem families while also demonstrating standard benchmark tasks~\cite{Jerbi2021ParametrizedQuantumP}; Skolik, Jerbi and Dunjko developed variational deep Q-learning agents~\cite{Skolik2022QuantumagentsintheGy}; and Sequeira, Santos and Barbosa studied policy-gradient agents with variational circuits and the associated sampling and trainability properties~\cite{Sequeira2023Policygradientsusing}.
+Quantum reinforcement learning (QRL) covers several distinct paradigms, including fault-tolerant algorithms with quantum access to the environment and near-term hybrid schemes in which PQCs replace classical function approximators inside otherwise classical RL loops~\cite{Meyer2022SurveyQuantumRL}. The latter is the regime relevant here. Chen et al. demonstrated variational quantum circuits as trainable value-function approximators for deep RL~\cite{Chen2020VariationalQuantumCi}; Jerbi et al. introduced parametrized quantum policies and proved learning advantages for specially constructed problem families while also demonstrating standard benchmark tasks~\cite{Jerbi2021ParametrizedQuantumP}; Skolik, Jerbi and Dunjko developed variational deep Q-learning agents~\cite{Skolik2022QuantumagentsintheGy}; and Sequeira, Santos and Barbosa studied policy-gradient agents with variational circuits and their trainability properties~\cite{Sequeira2023Policygradientsusing}.
 
-These results establish feasibility, but they do not establish a generic practical advantage for PQC-based RL. Hardware and finite-shot noise can alter both training and evaluation behavior~\cite{Skolik2023Robustnessofquantumr}. More importantly, recent benchmarking work has emphasized that parameter-count comparisons are insufficient and that claims of outperformance depend critically on statistical validation, sample complexity and the strength of the classical baseline. Meyer et al. propose a statistical benchmarking methodology and show that several apparent QRL advantages become more nuanced under controlled evaluation~\cite{Meyer2025BenchmarkingQuantumR}. Kruse et al. reach a similar conclusion when comparing multiple QRL families and explicitly question whether advantage persists beyond artificial problem constructions~\cite{Kruse2025BenchmarkingQuantumRL}. This motivates treating the quantum circuit in this paper as an alternative policy parameterization whose behavioral effect must be measured, rather than as an a priori superior learner.
+These results establish feasibility, but they do not establish a generic practical advantage for PQC-based RL. Hardware imperfections can alter both training and evaluation behavior~\cite{Skolik2023Robustnessofquantumr}. More importantly, recent benchmarking work has emphasized that parameter-count comparisons are insufficient and that claims of outperformance depend critically on statistical validation, sample complexity and the strength of the classical baseline. Meyer et al. propose a statistical benchmarking methodology and show that several apparent QRL advantages become more nuanced under controlled evaluation~\cite{Meyer2025BenchmarkingQuantumR}. Kruse et al. reach a similar conclusion when comparing multiple QRL families and explicitly question whether advantage persists beyond artificial problem constructions~\cite{Kruse2025BenchmarkingQuantumRL}. This motivates treating the quantum circuit in this paper as an alternative policy parameterization whose behavioral effect must be measured, rather than as an a priori superior learner.
 
 \subsection{Quantum reinforcement learning in finance}
 \label{subsec:bg-qrl-finance}
 
 Applications of QRL to financial decision making are only beginning to move beyond toy environments. Chen, Zhang and Chen study a hybrid PPO trading agent for sector rotation and report an important negative result: quantum-enhanced models obtain higher training rewards but underperform classical alternatives on investment metrics such as cumulative return and Sharpe ratio, illustrating the danger of reward--objective mismatch in financial RL~\cite{chen2025quantumreinforcementlearningtrading}. More recently, Gurgul, Chen and Lessmann propose variational QRL analogues of DDPG and DQN for dynamic portfolio optimisation and report risk-adjusted performance comparable to, and sometimes above, much larger classical models, while also documenting substantial end-to-end latency on cloud quantum hardware~\cite{Gurgul2026QRLPortfolio}. Both studies are valuable, but neither by itself resolves whether observed differences originate from the quantum parameterization, from model capacity, from training stochasticity, or from details of the experimental protocol.
 
-The present work is positioned around that identification problem. Rather than asking whether a quantum agent ``wins'' a portfolio benchmark, we isolate a single latent block inside one policy architecture and keep the rest of the RL pipeline fixed. We then compare no-layer, classical-layer and quantum-layer variants over repeated independent runs, and separately study register width and finite-shot effects. This design directly targets a gap highlighted by the recent QRL benchmarking literature: without matched architectures, repeated runs and statistical validation, architectural claims are difficult to distinguish from ordinary RL variance.
+The present work is positioned around that identification problem. Rather than asking whether a quantum agent ``wins'' a portfolio benchmark, we isolate a single latent block inside one policy architecture and keep the rest of the RL pipeline fixed. We then compare no-layer, classical-layer and quantum-layer variants over repeated independent runs and separately study register width. This design directly targets a gap highlighted by the recent QRL benchmarking literature: without matched architectures, repeated runs and statistical validation, architectural claims are difficult to distinguish from ordinary RL variance.
 
 % =====================================================================
 % GPT-REVISION: Reframed this part as experimental methodology. The previous title
@@ -222,8 +222,7 @@ The experiments are organised to separate four questions: (i) whether the
 restructured classical scaffold changes the behavior of the EI3 baseline;
 (ii) how a classical latent block behaves under the same scaffold; (iii) what is
 observed when that block is replaced by a PQC with the same input and output
-width; and (iv) how the quantum configuration behaves when register width and
-measurement sampling are varied. The experiments are intended as controlled
+width; and (iv) how the quantum configuration behaves when register width is varied. The experiments are intended as controlled
 comparisons within this testbed; they are not designed to establish quantum
 computational advantage.
 
@@ -607,57 +606,21 @@ be retained when interpreting any difference between the two models.
 Circuits are built and simulated with Qiskit~\cite{qiskit2024} and integrated
 with the PyTorch network through the \texttt{TorchConnector} interface, so that
 the hybrid model is trained end-to-end by a single optimiser. Expectation values
-are computed exactly with the \texttt{StatevectorEstimator} primitive. Gradients
+are computed exactly with the \texttt{StatevectorEstimator} primitive.
+% scope of this manuscript and are not discussed. Gradients
 with respect to the circuit parameters are estimated by simultaneous
 perturbation (\texttt{SPSAEstimatorGradient})~\cite{spall1992}, whose
 perturbation directions are drawn from a dedicated pseudorandom generator seeded
 independently of the training seed; circuit and network parameters are updated
 jointly with AdamW.
 
-The exact statevector regime is used first to evaluate the implemented quantum
-block without finite-shot sampling noise. Finite-shot behavior is considered
-separately in the experiments reported later.
-
-% GPT-REVISION: Removed "upper bound of what the block can contribute". Exact
-% expectation values remove sampling noise, but they do not provide a general
-% upper bound on learning performance.
-\paragraph{Exact expectation-value regime.}
-For a fixed circuit and observable, finite-shot estimates converge to the exact
-expectation value as the number of measurements increases. The statevector
-experiments therefore provide a deterministic expectation-value reference for
-the implemented circuit, without shot noise. They do not model device noise,
-finite sampling cost, queueing, compilation overhead, or other hardware effects.
-
-\paragraph{Separating training variability from shot noise.}
-The quantity under study is a difference in the distribution of outcomes across
-independent runs. Under exact simulation, the only stochastic ingredient
-distinguishing one run from another is the initialisation, so the dispersion
-reported in \ref{sec:results} is the dispersion of the training procedure and
-of nothing else. Any sampling-based estimator injects a second, independent
-source of randomness into every forward and backward pass, and the resulting
-spread confounds the architectural effect with the estimator variance. The exact regime removes this additional sampling contribution, which makes the
-observed run-to-run dispersion easier to interpret. Finite-shot experiments are
-then used to examine how measurement sampling changes that behavior.
-
-% GPT-REVISION: Removed the statements that exact simulation is the "only" regime
-% in which the ablation is identifiable and that finite shots make the claim
-% "unfalsifiable"; both were stronger than the experimental design establishes.
-
-\paragraph{Reproducibility of the simulation path.}
-For fixed parameters, the statevector expectation calculation is deterministic.
-The training pipeline additionally depends on the pseudorandom sources described
-above.
-
-\textcolor{red}{REVIEW: verify the claim of bit-for-bit reproducibility across
-software versions, hardware backends and numerical libraries. Unless this was
-tested explicitly, state only that the seeded software configuration is intended
-to make repeated batches reproducible. Also verify the exact Qiskit version and
-whether the sampling primitive used for the finite-shot experiments exposes a
-seed in that version.}
-
-The limitation that follows --- these results describe an idealised device and
-do not by themselves establish behaviour under hardware noise --- is real, and
-is stated as such in \ref{sec:limitations}.
+% removed from the article at the authors' request. The manuscript now reports
+% only the exact statevector simulation regime and makes no shot-related claim.
+\paragraph{Simulation regime.}
+All quantum experiments reported in this article use exact statevector
+expectation values. This choice defines the simulation setting evaluated here;
+the study does not attempt to characterize execution on quantum hardware.
+The corresponding limitation is stated in \ref{sec:limitations}.
 
 The quantum configurations evaluated are listed in
 \ref{tab:quantum-configs}.
@@ -855,8 +818,7 @@ the classical block was matched, not because it was measured to be better.
   Colour encodes the number of qubits on a single-hue scale, light to dark.
   Solid lines show the mean out-of-sample portfolio value and shaded envelopes
   denote $\pm 1$ standard deviation across $n = 20$ independent runs per
-  configuration. Expectation values are computed exactly, so the dispersion
-  shown is due to initialisation alone and not to sampling noise. The three
+  configuration. The three
   widths are indistinguishable in final value (Kruskal--Wallis $H(2) = 2.13$,
   $p = 0.345$, $\varepsilon^2 = 0.002$), with mean final values of
   \num{373616}, \num{373668} and \num{369224} monetary units; the \num{8}-qubit
