@@ -395,7 +395,7 @@ concatenated with the previous portfolio weights and reduced by a $1\times1$
 convolution directly to the eleven allocation scores, which a softmax turns into
 weights.
 
-\begin{figure}[htbp]
+\begin{figure*}[htbp]
   \centering
   \includegraphics[width=0.85\linewidth]{figuras_finais/fig1_ei3_original.png}
   \caption{Reference EI3 architecture, as reproduced in this work. The
@@ -411,7 +411,7 @@ weights.
   $w_t \in \Delta^{10}$. The network has \num{4987} trainable parameters. The
   proposed variants preserve this block and act only on what follows it.}
   \label{fig:arch-ei3}
-\end{figure}
+\end{figure*}
 
 The property that makes EI3 a suitable point of departure is precisely the one
 that makes it unsuitable as a host: the $1\times1$ convolution maps features to
@@ -478,7 +478,7 @@ exists to answer a question that must be settled before any quantum claim can be
 made --- whether the restructuring itself, independently of the block, accounts
 for the behaviour observed later.
 
-\begin{figure}[htbp]
+\begin{figure*}[htbp]
   \centering
   \includegraphics[width=\linewidth]{figuras_finais/fig4_nolayer.png}
   \caption{The No-Layer scaffold, QEI3-eq NoCL. The architecture is that of
@@ -492,7 +492,7 @@ for the behaviour observed later.
   % GPT-REVISION: Replaced "essentially the same capacity". Similar parameter
   % count does not establish equal function-class capacity.
   \label{fig:arch-nolayer}
-\end{figure}
+\end{figure*}
 
 \subsection{Classical instantiation: QEI3-eq}
 \label{subsec:arch-classical}
@@ -507,7 +507,7 @@ eight, the block contributes \num{72} trainable parameters --- a
 $8 \times 8$ weight matrix and eight biases --- against roughly
 $5\times10^{3}$ in the surrounding network.
 
-\begin{figure}[htbp]
+\begin{figure*}[htbp]
   \centering
   \includegraphics[width=\linewidth]{figuras_finais/fig2_classical_ours.png}
   \caption{Architecture of the proposed classical model, QEI3-eq. The
@@ -525,7 +525,7 @@ $5\times10^{3}$ in the surrounding network.
   configuration drawn is the two-wide one, with projection $11\to2$ and a
   $2\times2$ linear surrogate, totalling \num{5044} trainable parameters.}
   \label{fig:arch-classical}
-\end{figure}
+\end{figure*}
 
 % TODOITEM: Os diagramas das redes estão com uma diferença na dimensionalidade das camadas de transformação, isso foi gerado com base nos "qubits". Devemos re-rodar os diagramas substituindo por "n_qubits"}
 
@@ -547,7 +547,7 @@ be retained when interpreting any difference between the two models.
 % GPT-REVISION: Parameter count is a design property, not an empirical finding,
 % and it does not by itself imply parameter efficiency.
 
-\begin{figure}[htbp]
+\begin{figure*}[htbp]
   \centering
   \includegraphics[width=\linewidth]{figuras_finais/fig3_quantum_ours_q8.png}
   \caption{Architecture of the proposed hybrid model, QEI3, in the
@@ -563,7 +563,7 @@ be retained when interpreting any difference between the two models.
   $16\to11$) and a softmax. The model has \num{5702} trainable parameters, of
   which \num{16} are circuit parameters~$\theta$.}
   \label{fig:arch-quantum}
-\end{figure}
+\end{figure*}
 
 \begin{figure}[htbp]
   \centering
@@ -578,7 +578,7 @@ be retained when interpreting any difference between the two models.
   \label{fig:circuit-q2}
 \end{figure}
 
-\begin{figure}[htbp]
+\begin{figure*}[htbp]
   \centering
   \includegraphics[width=\linewidth]{figuras_finais/fig5_circuit_q8.png}
   \caption{The same circuit at $Q = \num{8}$ qubits. The structure is unchanged
@@ -596,7 +596,7 @@ be retained when interpreting any difference between the two models.
   two-qubit gates, the two patterns carry the same \num{16} parameters and
   differ only in the fixed entangler applied.}
   \label{fig:circuit-q8}
-\end{figure}
+\end{figure*}
 
 \subsection{Implementation and simulation regime}
 \label{subsec:implementation}
