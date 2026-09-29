@@ -1,0 +1,519 @@
+\documentclass[aps,floatfix,superscriptaddress,twocolumn,tightenlines,amsmath,amssymb,nofootinbib,10pt,longbibliography,prl]{revtex4-2}
+
+% ===== EXTRA PACKAGES =====
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[mathscr]{euscript}
+\usepackage{graphicx}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{amsthm}
+\usepackage{psfrag}
+\usepackage{ifsym}
+\usepackage{dsfont}
+\usepackage{enumerate}
+\usepackage{amsfonts}
+\usepackage{multirow}
+\usepackage{mathtools}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=red, citecolor=blue}
+\usepackage[sort&compress]{natbib}
+\usepackage[separate-uncertainty=true]{siunitx}
+\usepackage{comment}
+\usepackage[normalem]{ulem}
+\usepackage[sc,osf]{mathpazo}\linespread{1.05}
+\usepackage{bm}
+\usepackage{bbm}
+\usepackage{xr}\externaldocument[main-]{main}
+
+\newtheorem{theorem}{Theorem}
+
+% ===== MACROS =====
+\newcommand{\bra}[1] {\langle #1 |}
+\newcommand{\ket}[1] {| #1 \rangle}
+\newcommand{\changed}[1]{\textcolor{red}{ #1}}
+\newcommand{\todo}[1]{\textbf{\textcolor{blue}{ #1}}}
+\newcommand{\new}[1]{\textcolor{brown}{ #1}}
+\newcommand{\fref}[1]{Fig.~\ref{#1}}
+\newcommand{\id}{\mathds{1}}
+
+\newcommand{\sam}[1]{\textcolor{magenta}{[SB: {#1}]}}
+\newcommand{\fernando}[1]{{\color{green!50!black} [JV: #1]}}
+\newcommand{\mateus}[1]{{\color{blue!90!black} [GL: #1]}}
+\newcommand{\victor}[1]{{\color{blue!50!blue} [VB: #1]}}
+
+% ===== Sets ====== 
+\def\ZZ{\mathbbm{Z}}
+\def\RR{\mathbbm{R}}
+\def\CC{\mathbbm{C}}
+\def\R{\mathbbm{R}}
+\def\FF{\mathbbm{F}}
+\def\NN{\mathbbm{N}}
+\def\EE{\mathbbm{E}}
+\def\AA{\mathcal{A}}
+\def\ee{\epsilon}
+\def\II{\mathcal{I}}
+\def\SS{\mathcal{S}}
+\def\XX{\mathcal{X}}
+\def\MM{\mathcal{M}}
+\def\op{\mathrm{op}}
+\def\aux{\textrm{aux}}
+\def\1{\mathbf{1}}
+\def\0{\mathbf{0}}
+\def\o{\mathbb{O}}
+
+\def\minimize{\textrm{minimize}}
+\def\st{\textrm{subject to }}
+
+\DeclareMathOperator*{\maximize}{Maximize}
+
+\def\H{\mathcal{H}}
+\def\Acal{\mathcal{A}}
+\def\Fou{\mathcal{F}}
+\def\Id{\mathbbm{1}}
+\def\I{\mathbbm{I}}
+\def\spacedot{\,\cdot\,}
+\def\p{\mathbf{p}}
+\def\P{\mathcal{P}}
+\def\ci{\perp\!\!\!\perp}
+
+% For the orthogonal sum
+\newcommand{\operp}{\ensuremath{\text{\textcircled{$\perp$}}}}
+
+% Operators
+\DeclareMathOperator{\Sym}{Sym}
+\DeclareMathOperator{\Ad}{Ad}
+\DeclareMathOperator{\tr}{tr}
+\DeclareMathOperator{\Tr}{Tr}
+\DeclareMathOperator{\rank}{rank}
+\DeclareMathOperator{\range}{range}
+\DeclareMathOperator{\Span}{span}
+\DeclareMathOperator{\supp}{supp}
+\DeclareMathOperator{\const}{const}
+\DeclareMathOperator{\Circ}{Circ}
+\DeclareMathOperator{\ord}{ord}
+\DeclareMathOperator{\minarg}{minarg}
+\DeclareMathOperator{\sign}{sgn}
+
+%%%%%%%%%%%%%%%%%%%
+
+\def\b{\mathbf{b}}
+\def\c{\mathbf{c}}
+\def\d{\mathbf{d}}
+\def\e{\mathbf{e}}
+\def\t{\mathbf{t}}
+\def\u{\mathbf{u}}
+\def\p{\mathbf{p}}
+\def\h{\mathbf{h}}
+\def\q{\mathbf{q}}
+\def\w{\mathbf{w}}
+\def\x{\mathbf{x}}
+\def\y{\mathbf{y}}
+\def\z{\mathbf{z}}
+\def\bxi{\bm{\xi}}
+\def\bzeta{\bm{\zeta}}
+\def\CC{\mathcal{C}}
+\def\CD{\mathcal{D}}
+\def\CP{\mathcal{P}}
+
+\begin{document}
+
+\title{A Hybrid Quantum--Classical Policy Network for Reinforcement-Learning Portfolio Optimization}
+
+\author{Mateus}
+\affiliation{Eldorado}
+
+\author{Victor L. Beltran}
+\affiliation{Instituto de Ciência e Tecnologia Itaú}
+
+\author{Erhon}
+\affiliation{Eldorado}
+
+\author{Fernando}
+\affiliation{Eldorado}
+
+\author{Antonio }
+\affiliation{Instituto de Ciência e Tecnologia Itaú}
+
+\author{Samuraí Brito}
+\affiliation{Instituto de Ciência e Tecnologia Itaú}
+
+%\href{mailto:jose.scursulim@itau-unibanco.com.br}{jose.scursulim@itau-unibanco.com.br}
+% \href{mailto:victor.beltran@itau-unibanco.com.br}{victor.beltran@itau-unibanco.com.br}
+% \href{mailto:gabriel.langeloh@itau-unibanco.com.br}{gabriel.langeloh@itau-unibanco.com.br}
+% \href{mailto:samurai.brito@itau-unibanco.com.br}{samurai.brito@itau-unibanco.com.br}
+
+\date{\today}
+\begin{abstract}
+Hybrid quantum--classical models provide a practical setting for studying parameterized quantum circuits inside otherwise classical learning pipelines. We investigate a specific architectural question in reinforcement learning for portfolio allocation: how does the empirical behaviour of a policy change when one latent block is absent, instantiated classically, or implemented as a variational quantum circuit? Starting from the EI3 policy available in RLPortfolio, we construct a common scaffold and evaluate each configuration over 20 training runs. The quantum configurations are evaluated with exact statevector expectation values. Under the experimental protocol used here, the tested quantum configurations attain higher mean final portfolio values and lower run-to-run dispersion than the tested classical configurations. In the register-width experiment, the reported final-value distributions for 2, 4, and 8 qubits are not separated by the Kruskal--Wallis test ($H(2)=2.13$, $p=0.345$). Because register width and pseudorandom stream are confounded in that sweep, and because the classical and quantum campaigns are not seed-paired, these results are interpreted as an empirical characterization of the tested architectures rather than evidence of quantum advantage or of a uniquely quantum mechanism.
+\end{abstract}
+\maketitle
+
+% =====================================================================
+\section{Introduction}
+\label{sec:introduction}
+
+Reinforcement learning (RL) is an appealing target for this kind of hybridisation, and a demanding one. It is appealing because an RL agent learns a policy from interaction rather than from labelled examples, which suits financial settings where the data-generating process drifts and where the quantity of interest is a sequence of decisions rather than a single prediction. It is demanding because RL training is notoriously high-variance: the same architecture, trained twice under different random initialisations, can produce policies whose realised returns differ by a wide margin. This second property is the methodological crux of the present work. In a domain where single runs are not informative, any claim about the effect of a quantum layer that rests on a single quantum trajectory compared against a single classical trajectory is not identifiable --- the difference could as easily be an artefact of initialisation.
+
+%
+This research focus on three principal commitments, each of which shapes the structure of the paper. First, the quantum and classical models must differ in exactly one block, with identical interfaces, so that the comparison is attributable to the parameterisation of that block. Second, every configuration must be characterised by a \emph{distribution} over independent training runs rather than by a point estimate. Third, the quantum block must be evaluated in a regime in which its contribution can be separated from estimation noise; for that reason the experiments reported here are conducted with exact (statevector) expectation values, which correspond to the noiseless limit of the circuit and isolate the architectural effect. Finite-shot estimation and execution on hardware introduce a second, independent source of stochasticity and are outside the scope of this study (\ref{sec:limitations}).
+
+The narrative of the paper follows the order in which the experimental decisions were actually taken:
+
+\begin{enumerate}
+  \item We adopt an existing RL framework for portfolio
+        optimisation~\cite{RLportfolio} and survey the policy architectures it
+        provides, selecting EI3~\cite{RLportfolio} --- a convolutional descendant
+        of the EIIE formulation of Jiang et al.~\cite{jiang2017deepreinforcementlearningframework} --- as the
+        baseline. The selection is supported by an experiment, not by
+        assumption: EI3 is characterised across three training budgets to
+        establish both its attainable level and its dispersion before any
+        modification is introduced (\ref{subsec:res-baseline}).
+  \item EI3 in its original form has no latent representation of a width we can
+        control, and therefore no natural site for a quantum block. We derive a
+        scaffold --- a latent projection with bounded angle encoding and an MLP decision head --- that creates such a site, and we justify the removal of the gated residual branch that an early hybrid design contained, on the grounds that a bypass path around the block destroys the identifiability of the ablation (\ref{subsec:design-constraints}).
+  \item We then ask whether the scaffold alone accounts for any change, by
+        evaluating it with the latent block removed entirely (the No-Layer
+        variant), run by run (\ref{subsec:res-scaffold}).
+  \item From the scaffold we derive two models that differ only in the
+        parameterisation of the latent block: a classical dense layer
+        (QEI3-eq) and a variational circuit (QEI3). We sweep the width of the
+        classical block (\ref{subsec:res-classical-width}) and, under exact
+        simulation, the width of the quantum register
+        (\ref{subsec:res-qubit-width}), and finally compare the two at matched
+        width (\ref{subsec:res-headtohead}).
+\end{enumerate}
+
+The contributions are: (i) a hybridisation-ready reformulation of EI3 that provides a common interface for classical and quantum latent blocks; (ii) a repeated-run experimental protocol in which configurations are characterized by distributions rather than single trajectories; (iii) an empirical comparison of the scaffold, a classical latent block, and a variational quantum latent block under the reported simulation protocol; and (iv) a register-width experiment over \num{2}--\num{8} qubits. The study is designed to characterize the tested architectures; it does not attempt to establish quantum computational advantage or a general mechanism for the observed differences.
+
+% =====================================================================
+\section{Background and related work}
+\label{sec:background}
+
+\subsection{Portfolio optimisation as a reinforcement-learning problem}
+\label{subsec:bg-portfolio}
+
+In the formulation of Jiang et al.~\cite{jiang2017deepreinforcementlearningframework}, capital allocation is cast as a deterministic policy that maps a window of recent price history to a weight vector on the simplex. The state is a tensor of price-derived features across assets and time; the action is the target allocation; and the reward is the logarithmic growth of portfolio value net of transaction costs, so that the objective optimised by policy gradient is the cumulative log-return of the episode.
+
+The architecture underpinning this formulation is the Ensemble of Identical Independent Evaluators (EIIE). Each asset is scored by a weight-sharing network applied independently along the asset axis, and the scores are normalised into an allocation. Weight sharing has two consequences that matter here: the evaluation of an asset does not depend on its index within the universe, and the network generalises across universes of different cardinality. Two further mechanisms are inherited by all models in this paper --- the feedback of the previous weight vector, which allows the agent to price the cost of rebalancing, and convolutions along the temporal axis, which compress each asset's history into a compact representation. EI3~\cite{RLportfolio} extends EIIE with a three-headed convolutional block that aggregates short-, medium- and long-term temporal structure, and was evaluated on Brazilian equities, which makes it the natural baseline for the present testbed.
+
+\subsection{Parameterised quantum circuits as trainable layers}
+\label{subsec:bg-pqc}
+
+The quantum component studied in this work is a parameterised quantum circuit (PQC) used as a trainable latent layer. A PQC layer requires three ingredients that are directly relevant to the architecture developed below: a map from classical features to a quantum state, a parameterised unitary, and a measurement that returns classical values to the surrounding network~\cite{Benedetti2019Parameterizedquant,Cerezo2021Variationalquantum}.
+
+For a latent width $Q$, the classical network first produces a vector $x\in\mathbb{R}^{Q}$. In QEI3, its components are encoded into a $Q$-qubit register with single-qubit $R_Y(x_i)$ rotations. The encoded state is processed by a RealAmplitudes variational circuit composed of trainable $R_Y$ rotations and CNOT entangling gates. The circuit is then read out through the local expectation values $\langle Z_i\rangle$, producing a $Q$-dimensional real vector that can be consumed by the classical decision head.
+
+This input--output structure is central to the comparison in this paper. Each local Pauli-$Z$ expectation value lies in $[-1,1]$, so the quantum block has a bounded $Q$-dimensional output. The classical counterpart is therefore constructed with the same latent width and a bounded $\tanh$ output, reducing differences in the interfaces presented to the downstream network. Matching input and output dimensions does not make the classical and quantum blocks equivalent in expressive capacity; it provides a common architectural location at which their empirical behaviour can be compared.
+
+The experiments use RealAmplitudes with one repetition and full entanglement. Under this specification, the circuit contains $2Q$ trainable variational parameters. The logical full-entanglement pattern contains $\binom{Q}{2}$ CNOTs, giving one, six, and twenty-eight CNOTs for the $Q=2$, $4$, and $8$ configurations evaluated here. These circuit specifications are reported to make the implemented latent block reproducible; no claim is made that this ansatz or entanglement pattern is optimal for the portfolio task.
+
+\subsection{Quantum and hybrid reinforcement learning}
+\label{subsec:bg-qrl}
+
+Variational quantum circuits have been investigated as function approximators in reinforcement learning, including parameterized quantum policies and quantum models used within value-based methods~\cite{Jerbi2021ParametrizedQuantumP,Skolik2022QuantumagentsintheGy}. These studies establish the feasibility of integrating trainable quantum circuits into standard RL pipelines, but they do not imply that a quantum parameterization will outperform a classical one in a given application.
+
+For portfolio allocation, the relevant question in this work is narrower. The EI3 baseline already provides the convolutional processing and policy structure needed for the financial task. We therefore do not replace the full policy with a quantum model. Instead, we construct a hybrid architecture in which a single latent block can be removed, instantiated as a classical dense transformation, or replaced by a PQC while the surrounding scaffold is retained. This design motivates the experimental sequence described in Sections~\ref{sec:testbed}--\ref{sec:results} and keeps the comparison focused on the behaviour of the latent-block parameterization under the reported protocol.
+
+\section{Experimental testbed}
+\label{sec:testbed}
+
+\subsection{Environment and dataset}
+\label{subsec:dataset}
+
+All experiments use the RLPortfolio framework~\cite{RLportfolio}, which provides a Gym-compatible environment for portfolio allocation together with the policy-gradient training loop and the online-learning mechanism used during evaluation.
+
+The universe consists of ten equities traded on the Brazilian exchange (B3): ABEV3, BBAS3, BBDC4, ITUB4, LREN3, PETR4, PRIO3, RENT3, VALE3 and WEGE3, with daily closing, high and low prices retrieved from Yahoo Finance. Prices are normalised per asset with a maximum-absolute scaler fitted exclusively on the training window and applied unchanged to the test window; in addition, each observation window is normalised inside the environment by its last closing price. A single observation is therefore a tensor of shape $3 \times 10 \times 50$ (features $\times$ assets $\times$ time window), the window of \num{50} trading days being the history available to the agent at each decision step.
+
+The split is out-of-time: training spans 2017-01-01 to 2019-12-31 and testing spans 2020-01-01 to 2020-12-31, the latter yielding \num{198} decision steps (\num{199} portfolio-value observations including the initial state). Every simulation starts from an initial capital of \num{100000} monetary units and pays a proportional transaction cost of \SI{0.25}{\percent} on rebalancing. The output layer emits eleven weights: the ten assets plus a cash position representing the option to remain liquid and unremunerated.
+
+Two properties of this testbed should be kept in view when reading the results. The test window is a single year, and an atypical one, containing both a sharp drawdown and a strong recovery; the trajectories in \ref{sec:results} therefore describe behaviour under one realised market path, not an expectation over market regimes. And no held-out validation partition is used: the test environment also serves for periodic validation, and online learning is enabled during the test episode. Both choices are inherited from the reference framework and are retained so that all models --- baseline, classical and hybrid --- are evaluated under identical conditions; their consequences for interpretation are discussed in \ref{sec:limitations}.
+
+\subsection{Training protocol and statistical treatment}
+\label{subsec:protocol}
+
+Because the variability of RL training across initialisations is of the same order as the effects under study, no configuration is characterised by a single run. Each configuration is trained \num{20} times independently, drawing from a single pseudorandom stream seeded at the start of the batch and not reinitialised between runs, so that each run begins from a distinct initialisation and the batch as a whole is reproducible by re-executing the procedure. Because architectures with different parameter counts consume the pseudorandom stream differently, initialisations are \emph{not} paired across models, and all comparisons between configurations are treated as independent samples.
+
+The quantity reported throughout is the portfolio value along the test window, summarised at the last step as the \emph{final value}. Figures show the mean trajectory with a $\pm 1$ standard deviation envelope across runs. Dispersion is compared through the coefficient of variation, which is the appropriate scale-free measure here because the configurations differ in mean level.
+
+Two sets of training hyperparameters are used (\ref{tab:hyperparams}). The \emph{unified protocol} applies an identical learning rate, episode count and batch size to every architecture, and is the protocol under which all proposed variants are evaluated; differences between them are therefore attributable to architecture. The \emph{original configuration} reproduces the hyperparameters published for the reference model~\cite{RLportfolio}, and is used to characterise the baseline in its best known conditions, so that the comparison in \ref{sec:results} is made against the strongest available version of EI3 rather than against a weakened one.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Training hyperparameters under the two evaluated protocols.}
+  \label{tab:hyperparams}
+  \begin{tabular}{lcc}
+    \toprule
+    Hyperparameter & Unified protocol & Original configuration \\
+    \midrule
+    Training episodes      & 50                & 120 \\
+    Batch size             & 8                 & 200 \\
+    Learning rate          & $1\times10^{-5}$  & $1\times10^{-5}$ \\
+    Sample bias            & 0.5               & 0.5 \\
+    Action noise           & Dirichlet         & Dirichlet \\
+    \quad $\epsilon$       & 0.2               & 0.2 \\
+    \quad $\alpha$         & 0.01              & 0.01 \\
+    Initialisation seed    & 42                & 42 \\
+    Runs per configuration & 20                & 20 \\
+    \bottomrule
+  \end{tabular}
+  \\[3pt]
+\end{table}
+
+In the sweep over the width of the quantum register, the seed is set as a function of the width,
+%
+\begin{equation}
+  \mathrm{seed}(Q) = 42 + Q,
+  \label{eq:seed-rule}
+\end{equation}
+%
+so that each register width is evaluated under a distinct fixed seed. We record this explicitly because it means that, in that experiment, the effect of the register width and the effect of the initialisation stream are not separable. The consequence is asymmetric and worth stating in advance: the rule weakens any claim of a \emph{difference} between widths, but it strengthens a claim of \emph{stability}, since agreement across widths is then agreement across three independent pseudorandom streams. \ref{subsec:res-qubit-width} exploits the second reading only.
+
+% =====================================================================
+\section{From EI3 to a hybridisable architecture}
+\label{sec:architectures}
+
+This section describes the four architectures evaluated and, more importantly, the reasoning that connects them. They form a chain in which each step changes exactly one thing relative to the previous one, and it is that chain --- rather than any single model --- that carries the argument of the paper.
+
+\subsection{Baseline: EI3}
+\label{subsec:arch-ei3}
+
+The baseline is EI3 as reproduced from the reference implementation~\cite{RLportfolio,RLportfolio} and shown in \ref{fig:arch-ei3}. The observation tensor is processed by three parallel heads; their outputs are concatenated with the previous portfolio weights and reduced by a $1\times1$ convolution directly to the eleven allocation scores, which a softmax turns into weights.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.85\linewidth]{figuras_finais/fig1_ei3_original.png}
+  \caption{Reference EI3 architecture, as reproduced in this work. The observation tensor of dimensions $3 \times 10 \times 50$ (features $\times$ assets $\times$ time window) enters a three-headed convolutional block: a short-term head (Conv $1\times3$ followed by Conv $1\times48$), a mid-term head (Conv $1\times21$ followed by Conv $1\times30$), both with ReLU activations, and a long-term head implemented as a MaxPool $1\times50$. The three outputs are concatenated with the previous portfolio weights $a_{t-1}$ into a \num{44}-channel representation, which a final $1\times1$ convolution reduces to eleven scores --- the ten assets plus the cash position, held at zero --- normalised by a softmax into the allocation vector $w_t \in \Delta^{10}$. The network has \num{4987} trainable parameters. The proposed variants preserve this block and act only on what follows it.}
+  \label{fig:arch-ei3}
+\end{figure}
+
+The property that makes EI3 a suitable point of departure is precisely the one that makes it unsuitable as a host: the $1\times1$ convolution maps features to allocation scores in a single step, so the network has no intermediate representation whose width is a free parameter. There is no site at which a block of $Q$ neurons --- or $Q$ qubits --- could be inserted without changing the meaning of the surrounding layers.
+
+\subsection{Design constraints imposed by a quantum latent block}
+\label{subsec:design-constraints}
+
+Creating such a site requires three changes, each dictated by a property of the quantum block rather than by a search for accuracy.
+
+\paragraph{A latent projection with bounded angles.}
+A dense projection maps the eleven convolutional channels to $Q$ values, followed by a $\pi\tanh(\cdot)$ scaling that constrains them to $[-\pi,\pi]$. The bound is not cosmetic. Angle encoding is $2\pi$-periodic, so unbounded pre-activations would alias distinct market states onto the same rotation angle, and the resulting many-to-one map would be invisible to the loss while corrupting the representation. Restricting the domain to a single period makes the encoding injective in each coordinate.
+
+\paragraph{A decision head that consumes the block output.}
+Because the block emits $Q$ values in $[-1,1]$ rather than eleven allocation scores, a small MLP head is required to map the latent code back to the simplex. This head is identical in every variant.
+
+\paragraph{Removal of the gated residual branch.}
+An early version of the hybrid model included a residual projection from the latent representation around the block, combined with its output through a learnable gate. This is standard practice for trainability, and it was removed deliberately. With a bypass in place, the decision head can be supplied with the pre-block representation directly, and the gate is free to attenuate the block towards irrelevance; the network can then reach good performance while making essentially no use of the layer under study. Any comparison between a quantum and a classical instantiation of that layer would then be uninformative, because neither model is required to use it. Removing the branch forces the decision head to consume the block output and nothing else, which is what makes the ablation identifiable. The cost --- a harder optimisation problem, and the block becoming a genuine information bottleneck --- is accepted for that reason.
+% todoitem {Reportamos que removemos a residual, pois o treinamento fica muito inviável. Devemos colocar os experimentos provando isso? Ou apenas assumimos as alegações?}
+
+\subsection{The scaffold: QEI3-eq NoCL}
+\label{subsec:arch-nolayer}
+
+Applying the changes above without inserting any latent block yields the scaffold, denoted QEI3-eq NoCL and shown in \ref{fig:arch-nolayer}: the convolutional block feeds the latent projection, the scaled latent code feeds the MLP head directly, and the softmax produces the allocation. This variant exists to answer a question that must be settled before any quantum claim can be made --- whether the restructuring itself, independently of the block, accounts for the behaviour observed later.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\linewidth]{figuras_finais/fig4_nolayer.png}
+  \caption{The No-Layer scaffold, QEI3-eq NoCL. The architecture is that of QEI3-eq (\ref{fig:arch-classical}) with the latent block removed: the latent projection, with its $\pi\tanh(\cdot)$ scaling, feeds the MLP head directly. Convolutional block, projection, decision head and softmax are unchanged, so the difference in behaviour between this variant and QEI3-eq is attributable to the latent block alone. The ablation removes six parameters, \num{5038} against \num{5044} for QEI3-eq in the two-wide instance drawn here, which makes the comparison one between architectures of essentially the same capacity.}
+  \label{fig:arch-nolayer}
+\end{figure}
+
+\subsection{Classical instantiation: QEI3-eq}
+\label{subsec:arch-classical}
+
+QEI3-eq (\ref{fig:arch-classical}) instantiates the latent block classically, as a dense layer of width $Q$ with $\tanh$ activation. The activation is chosen to match the range of the quantum readout: since $\langle Z_i \rangle \in [-1,1]$ by construction, a classical surrogate with unbounded output would differ from the quantum block in codomain as well as in parameterisation, and the ablation would no longer isolate a single factor. At the reference width of eight, the block contributes \num{72} trainable parameters --- a $8 \times 8$ weight matrix and eight biases --- against roughly $5\times10^{3}$ in the surrounding network.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\linewidth]{figuras_finais/fig2_classical_ours.png}
+  \caption{Architecture of the proposed classical model, QEI3-eq. The convolutional block is inherited from EI3 (\ref{fig:arch-ei3}): the observation tensor of dimensions $3 \times 10 \times 50$ is processed by a short-term head (Conv $1\times3$ followed by Conv $1\times48$), a mid-term head (Conv $1\times21$ followed by Conv $1\times30$) and a long-term head (MaxPool $1\times50$), whose outputs are concatenated with the previous portfolio weights $a_{t-1}$ and reduced by a $1\times1$ convolution to eleven channels. A latent projection --- a fully connected layer followed by a $\pi\tanh(\cdot)$ scaling that constrains the values to $[-\pi,\pi]$ --- feeds the latent block, here a classical surrogate of the quantum layer formed by $\tanh$, a linear map and $\tanh$. An MLP head of three fully connected layers and a softmax produces the allocation vector $w_t \in \Delta^{10}$. The configuration drawn is the two-wide one, with projection $11\to2$ and a $2\times2$ linear surrogate, totalling \num{5044} trainable parameters.}
+  \label{fig:arch-classical}
+\end{figure}
+
+% TODOITEM: Os diagramas das redes estão com uma diferença na dimensionalidade das camadas de transformação, isso foi gerado com base nos "qubits". Devemos re-rodar os diagramas substituindo por "n_qubits"}
+
+\subsection{Quantum instantiation: QEI3}
+\label{subsec:arch-quantum}
+
+QEI3 (\ref{fig:arch-quantum}) replaces the same block with a variational circuit, preserving input dimension, output dimension and position in the network. The $Q$ scaled latent values are written into a $Q$-qubit register by angle embedding, a RealAmplitudes ansatz with one repetition and full entanglement is applied, and the block is read out through $\langle Z_i \rangle$ on each qubit. \ref{fig:circuit-q2,fig:circuit-q8} show the circuit at the extremes of the sweep.
+
+At the reference width of eight the circuit carries \num{16} trainable parameters, against \num{72} for the classical block it replaces. This asymmetry is not incidental to the comparison; it is one of its findings, and we return to it in \ref{sec:discussion}.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\linewidth]{figuras_finais/fig3_quantum_ours_q8.png}
+  \caption{Architecture of the proposed hybrid model, QEI3, in the \num{8}-qubit configuration. Convolutional block and decision head are those of QEI3-eq (\ref{fig:arch-classical}); the latent block alone is replaced by a quantum neural network. The latent projection maps the eleven convolutional channels to eight angles in $[-\pi,\pi]$, which the angle embedding $E(x)$ writes into an eight-qubit register prepared in $\lvert 0 \rangle$; the variational unitary $U(\theta)$ is a RealAmplitudes ansatz with a single repetition and a full entanglement pattern, and the block is read out through the expectation values $\langle Z_i \rangle$ of the Pauli-$Z$ operator on each qubit. The eight resulting values feed an MLP head ($8\to16$, $16\to16$, $16\to11$) and a softmax. The model has \num{5702} trainable parameters, of which \num{16} are circuit parameters~$\theta$.}
+  \label{fig:arch-quantum}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.9\linewidth]{figuras_finais/fig5_circuit_q2.png}
+  \caption{Variational circuit of the latent block for $Q = \num{2}$ qubits, one repetition ($L = 1$) and full entanglement. Each qubit first receives an $R_Y$ rotation whose angle carries one component of the projected input (angle embedding $E(x)$). The RealAmplitudes ansatz $U(\theta)$ then applies a layer of trainable $R_Y$ rotations, a CNOT entangling the pair, and a second layer of trainable $R_Y$ rotations, giving four circuit weights and a single CNOT. The block is read out through $\langle Z_i \rangle$ on each qubit.}
+  \label{fig:circuit-q2}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\linewidth]{figuras_finais/fig5_circuit_q8.png}
+  \caption{The same circuit at $Q = \num{8}$ qubits. The structure is unchanged --- angle embedding, trainable $R_Y$ layer, entanglement, second trainable $R_Y$ layer, and readout in $\langle Z_i \rangle$ --- but full entanglement now requires one CNOT for every pair of qubits: the circuit carries \num{16} weights and \num{28} CNOTs, against \num{4} weights and a single CNOT at two qubits (\ref{fig:circuit-q2}). This growth of the entangling layer, quadratic in the number of qubits, is what makes the simulation cost rise steeply with the width of the latent block, and motivates the restriction of the qubit sweep to \num{2}, \num{4} and \num{8} qubits. The pattern is stated explicitly throughout because it is not the default of the library implementation: under \texttt{reverse\_linear} the same specification would yield seven CNOTs at this width. Since $\text{reps} = 1$ places no trainable parameter between the two-qubit gates, the two patterns carry the same \num{16} parameters and differ only in the fixed entangler applied.}
+  \label{fig:circuit-q8}
+\end{figure}
+
+\subsection{Implementation and simulation regime}
+\label{subsec:implementation}
+
+Circuits are built and simulated with Qiskit~\cite{qiskit2024} and integrated with the PyTorch network through the TorchConnector interface, so that the classical and quantum components are optimized end-to-end. Quantum expectation values are evaluated exactly with StatevectorEstimator. Gradients with respect to circuit parameters are obtained with SPSAEstimatorGradient~\cite{spall1992}, using a pseudorandom generator distinct from the training stream, and model parameters are updated jointly with AdamW.
+
+Exact statevector expectation values are used throughout the quantum experiments reported in this paper. This choice defines the simulation regime of the study and allows the architectural comparison to be made without introducing hardware effects. The resulting experiments therefore characterize the implemented hybrid model under ideal statevector simulation and should not be interpreted as evidence about execution on noisy quantum hardware.
+
+The quantum configurations evaluated are listed in \ref{tab:quantum-configs}.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Quantum configurations evaluated. The ansatz is RealAmplitudes with $\text{reps} = 1$ and $\text{entanglement} = \texttt{full}$ in every configuration; gate counts are those of the logical circuit, before transpilation to any device connectivity (see \ref{tab:transpiled} for the transpiled cost). All expectation values are computed exactly; seeds follow \ref{eq:seed-rule}.}
+  \label{tab:quantum-configs}
+  \begin{tabular}{lccccc}
+    \toprule
+    Mode & Qubits & Circuit params. & CNOTs & Seed & Runs \\
+    \midrule
+    Statevector & 2 & 4  & 1  & 44 & 20 \\
+    Statevector & 4 & 8  & 6  & 46 & 20 \\
+    Statevector & 8 & 16 & 28 & 50 & 20 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+% =====================================================================
+\section{Results}
+\label{sec:results}
+
+The results are presented in the order of the experimental chain: the baseline, the scaffold, the classical block, the quantum block, and the matched-width comparison. Each step isolates one factor.
+
+\FloatBarrier
+\subsection{Step 1 --- behaviour of the baseline}
+\label{subsec:res-baseline}
+
+\ref{fig:ei3-original} characterises EI3 under three training budgets before any modification is introduced. Two observations follow.
+
+First, the attainable level of the baseline depends on the training budget, and the dependence is statistically detectable (Kruskal--Wallis $H(2) = 7.66$, $p = 0.022$, $\varepsilon^2 = 0.099$), with mean final values of \num{192638}, \num{216122} and \num{224138} monetary units. The strongest configuration is therefore the long schedule with a large batch, and it is that value --- \num{224138} --- that any proposed variant must be compared against if the comparison is to be fair.
+
+Second, and more consequentially for the design of this study, the dispersion of the baseline is substantial and grows with the budget that produces the best mean: standard deviations of \num{31608}, \num{28132} and \num{55409}, the last corresponding to a coefficient of variation of roughly \num{0.25}. A single training run of this architecture is thus a weak measurement, which is the empirical justification for the repeated-run protocol of \ref{subsec:protocol}.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\linewidth]{fig1_ei3_original.png}
+  \caption{Original EI3 architecture under three training configurations: the reference implementation, a short schedule with a small batch (\num{50} episodes, batch \num{8}), and a long schedule with a large batch (\num{120} episodes, batch \num{200}). Solid lines show the mean evaluation portfolio value over the test period and shaded envelopes denote $\pm 1$ standard deviation across $n = 20$ independent runs per configuration; the dashed grey line marks the initial capital of \num{100000} monetary units. Mean final values are \num{192638}, \num{216122} and \num{224138} monetary units respectively, with standard deviations of \num{31608}, \num{28132} and \num{55409}. The training budget shifts the final-value distribution (Kruskal--Wallis $H(2) = 7.66$, $p = 0.022$, $\varepsilon^2 = 0.099$), the longest schedule attaining the highest mean at the cost of the largest dispersion across runs.}
+  \label{fig:ei3-original}
+\end{figure}
+
+\FloatBarrier
+\subsection{Step 2 --- does the scaffold alone account for the change?}
+\label{subsec:res-scaffold}
+
+Before attributing anything to a latent block, the restructuring itself must be characterised. \ref{fig:no-layer} shows the twenty runs of the QEI3-eq NoCL campaign individually, behind their mean.
+
+The scaffold alone raises the level: its mean final value of \num{280563} monetary units exceeds the best baseline configuration by a wide margin. Read uncritically, this would already be a positive result. Read carefully, it is a warning: the standard deviation across runs is \num{82410}, a coefficient of variation of \num{0.29}, and final values span from \num{140902} to \num{375011}. The interval covered by individual runs of the scaffold contains the mean of every configuration reported in this paper.
+
+The run-by-run view also shows \emph{how} the runs differ. They share the shape of the trajectory --- the same drawdown, the same recovery, the same inflections at the same steps --- and separate almost entirely in level. The initialisation is not selecting between qualitatively different policies; it is scaling a policy of largely common shape. This is the behaviour that the latent block will be asked to control, and it is the reason why the analysis that follows treats dispersion as a primary quantity rather than as an error bar around the mean.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\linewidth]{fig2_no_layer.png}
+  \caption{Experimental campaign of the QEI3-eq NoCL scaffold: the \num{20} independent runs are drawn individually in light strokes behind their mean trajectory (bold), over the same evaluation window and initial capital as the remaining figures. The runs share the shape of the trajectory and separate mainly in level, which is what produces the wide envelope of this configuration in \ref{fig:layer-width}: final values range from \num{140902} to \num{375011} monetary units, with mean \num{280563} and standard deviation \num{82410}.}
+  \label{fig:no-layer}
+\end{figure}
+
+\FloatBarrier
+\subsection{Step 3 --- width of the classical latent block}
+\label{subsec:res-classical-width}
+
+\ref{fig:layer-width} compares the scaffold with the classical instantiation of the block at the reference width of eight neurons, chosen to match the register width of the quantum counterpart.
+
+Inserting the block raises the mean final value from \num{280563} to \num{301294} monetary units and lowers the coefficient of variation from \num{0.29} to \num{0.22}. Both movements are in the expected direction, and neither is decisive: at $n = 20$ per configuration the final-value distributions are not distinguishable.
+
+The correct reading of this result is not that the classical block does nothing. It is that seventy-two additional parameters, placed at this position in the network, produce an effect that this sample size cannot resolve. This establishes the reference point for the quantum experiment: the question is no longer whether a latent block helps in principle, but whether replacing its parameterisation produces an effect of a magnitude that the same protocol \emph{can} resolve.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{fig3_classica_neuronios.png}
+  \caption{Effect of the width of the classical latent layer on the proposed classical architecture: QEI3-eq NoCL, without the layer (\num{0} neurons), and QEI3-eq with a layer of \num{8} neurons, the width that matches the number of qubits of the quantum counterpart. Solid lines show the mean evaluation portfolio value and shaded envelopes denote $\pm 1$ standard deviation across $n = 20$ independent runs per configuration. Inserting the layer raises the mean final value from \num{280563} to \num{301294} monetary units and lowers the coefficient of variation from \num{0.29} to \num{0.22}, but the final-value distributions are not distinguishable at the available sample size.}
+  \label{fig:layer-width}
+\end{figure}
+
+\FloatBarrier
+\subsection{Step 4 --- width of the quantum register under exact simulation}
+\label{subsec:res-qubit-width}
+
+\ref{fig:qubit-variation} reports the quantum instantiation at register widths of \num{2}, \num{4} and \num{8} qubits, with expectation values computed exactly.
+
+Two results emerge, and they should be read together rather than in sequence.
+
+\paragraph{No width-dependent difference is detected in this sweep.} Mean final values
+are \num{373616}, \num{373668} and \num{369224} monetary units for two, four and eight qubits, and the three distributions are indistinguishable (Kruskal--Wallis $H(2) = 2.13$, $p = 0.345$, $\varepsilon^2 = 0.002$). The effect size is essentially zero: register width explains no appreciable fraction of the variability in final value. Since \ref{eq:seed-rule} ties each width to a distinct seed, we do not read this as evidence that width is irrelevant in general --- the two factors are confounded in this experiment --- but the confound cuts in the direction that strengthens the conclusion we do draw, since the agreement observed is agreement across three independent initialisation streams.
+
+\paragraph{The dispersion is an order of magnitude below anything reported so
+far.} Standard deviations are \num{4327}, \num{4583} and \num{11075}, which correspond to coefficients of variation of approximately \num{0.012}, \num{0.012} and \num{0.030}. For comparison, the same quantity was \num{0.29} for the scaffold and \num{0.22} for its classical instantiation. Because expectation values are exact, none of this residual spread is estimation noise: it is initialisation variance, measured under the same protocol that produced the much larger figures in \ref{subsec:res-scaffold,subsec:res-classical-width}.
+
+We also note that the narrowest register is the most economical on every axis: four circuit parameters and one CNOT against sixteen and twenty-eight at eight qubits, with a simulation cost that grows exponentially in the register width and a two-qubit-gate count that grows quadratically. Under the evidence available, the cost-benefit optimum in this regime is the \emph{narrow} register, and the eight-qubit configuration is retained in the head-to-head comparison of \ref{subsec:res-headtohead} only because it is the width at which the classical block was matched, not because it was measured to be better.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\linewidth]{fig4_quantica_qubits.png}
+  \caption{Quantum architecture under statevector simulation as a function of the width of the quantum latent layer: \num{2}, \num{4} and \num{8} qubits. Colour encodes the number of qubits on a single-hue scale, light to dark. Solid lines show the mean portfolio value and shaded envelopes denote $\pm 1$ standard deviation across $n = 20$ independent runs per configuration. Expectation values are computed exactly, so the dispersion shown is due to initialisation alone and not to sampling noise. The three widths are indistinguishable in final value (Kruskal--Wallis $H(2) = 2.13$, $p = 0.345$, $\varepsilon^2 = 0.002$), with mean final values of \num{373616}, \num{373668} and \num{369224} monetary units; the \num{8}-qubit configuration is the most dispersed of the three (standard deviation \num{11075} against \num{4327} and \num{4583}).}
+  \label{fig:qubit-variation}
+\end{figure}
+
+\FloatBarrier
+\subsection{Step 5 --- matched-width comparison}
+\label{subsec:res-headtohead}
+
+The two instantiations of the latent block can now be compared at the same width, under the same protocol, inside the same network. At eight units, the classical block reaches a mean final value of \num{301294} with a coefficient of variation of \num{0.22}; the quantum block reaches \num{369224} with a coefficient of variation of approximately \num{0.030}, using \num{16} trainable parameters against \num{72}.
+
+\ref{tab:summary} collects every campaign reported above on a common scale. Read down the table, the ordering is consistent: the level rises and the dispersion falls along the chain EI3 $\to$ scaffold $\to$ classical block $\to$ quantum block, and the largest single movement in dispersion occurs at the last step.
+\begin{table}[htbp]
+  \centering
+  \caption{Summary of all experimental campaigns. Each row reports the distribution of the final portfolio value (monetary units; initial capital \num{100000}) at the end of the 2020 test window, over $n$ independent training runs. s.d.\ is the sample standard deviation across runs and CV $= \mathrm{s.d.}/\text{mean}$ is the coefficient of variation, used as the scale-free measure of run-to-run dispersion. The first block characterises the EI3 baseline under three training configurations; all remaining rows use the unified protocol of table~\ref{tab:hyperparams} and differ only in the latent block: absent (scaffold), a dense $\tanh$ layer (72 parameters at 8 neurons), or a RealAmplitudes circuit with reps $=1$ and full entanglement ($2Q$ parameters) evaluated with exact expectation values. Quantum rows use the width-dependent seeds of eq.~\eqref{eq:seed}, so cross-model comparisons are between unpaired samples and are reported descriptively.}
+  \label{tab:summary}
+  \begin{tabular}{lccccc}
+    \toprule
+    Configuration & Latent block & $n$ & Mean & s.d. & CV \\
+    \midrule
+    EI3, reference impl.      & ---        & 20 & \num{192638} & \num{31608} & 0.164 \\
+    EI3, 50 ep.\ / batch 8    & ---        & 20 & \num{216122} & \num{28132} & 0.130 \\
+    EI3, 120 ep.\ / batch 200 & ---        & 20 & \num{224138} & \num{55409} & 0.247 \\
+    \midrule
+    QEI3-eq NoCL              & absent     & 20 & \num{280563} & \num{82410} & 0.294 \\
+    QEI3-eq                   & 8 neurons  & 20 & \num{301294} & \num{65509} & 0.217 \\
+    \midrule
+    QEI3                      & 2 qubits   & 20 & \num{373616} & \num{4327}  & 0.012 \\
+    QEI3                      & 4 qubits   & 20 & \num{373668} & \num{4583}  & 0.012 \\
+    QEI3                      & 8 qubits   & 20 & \num{369224} & \num{11075} & 0.030 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+We deliberately refrain from declaring this difference significant. The comparison is between batteries that were not seed-paired --- the classical campaign ran under seed \num{42} and the eight-qubit quantum campaign under seed \num{50}, per \ref{eq:seed-rule} --- and the corresponding hypothesis tests have not yet been computed. What can be asserted at this stage is descriptive and, we believe, still substantive: the quantum instantiation attains a higher mean level with a dispersion roughly an order of magnitude smaller, and does so at three distinct widths under three distinct seeds, whereas the classical instantiation was not distinguishable from having no block at all under the same sample size.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\linewidth]{BenchmarkClassical.png}
+  \todoitem{Decidir se tira }
+  \caption{Mean portfolio value across independent runs for the classical baselines --- EI3, EIIE and the reference benchmark --- and the proposed classical model. Solid lines show the mean trajectory over the test period; shaded envelopes denote $\pm 1$ standard deviation across independent training runs per model. All agents start from the same initial capital of \num{100000} monetary units (dashed grey line) and are evaluated on an identical evaluation window.}
+  \label{fig:benchmark-classical}
+\end{figure}
+
+% =====================================================================
+
+% =====================================================================
+\section{Limitations and interpretation}
+\label{sec:limitations}
+
+The results characterize the architectures and training campaigns evaluated in this study. They do not establish quantum computational advantage or identify a uniquely quantum mechanism for the observed differences. The quantum circuits are evaluated with exact statevector expectation values, the evaluation covers a single 2020 market path, and the classical and quantum campaigns are not seed-paired. In the register-width sweep, the pseudorandom seed changes with $Q$, so register width and initialization stream are confounded. These factors limit causal interpretation and generalization beyond the reported testbed.
+
+The principal classical--quantum comparison should therefore be read descriptively. Under the reported protocol, the tested quantum configurations have higher observed mean final portfolio values and lower run-to-run dispersion than the tested classical configurations. Establishing whether these differences are reproducible across market periods and attributable to the latent-block parameterization requires additional controlled experiments, including matched random streams and predefined between-model statistical tests.
+
+\bibliographystyle{splncs04}
+\bibliography{ref}
+
+https://arxiv.org/abs/2601.18811 % Paper extremamente relevante de QRL
+
+\end{document}
