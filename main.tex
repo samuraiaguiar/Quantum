@@ -295,7 +295,7 @@ The property that makes EI3 a suitable point of departure is precisely the one t
 Creating such a site requires three changes, each dictated by a property of the quantum block rather than by a search for accuracy.
 
 \paragraph{A latent projection with bounded angles.}
-A dense projection maps the eleven convolutional channels to $Q$ values, followed by a $\pi\tanh(\cdot)$ scaling that constrains them to $[-\pi,\pi]$. The bound is not cosmetic. Angle encoding is $2\pi$-periodic, so unbounded pre-activations would alias distinct market states onto the same rotation angle, and the resulting many-to-one map would be invisible to the loss while corrupting the representation. Restricting the domain to a single period makes the encoding injective in each coordinate.
+A dense projection maps the eleven convolutional channels to $Q$ values, followed by a $\pi\tanh(\cdot)$ scaling that constrains them to $[-\pi,\pi]$. Because the subsequent angle encoding is periodic, this transformation is used to bound the values presented to the quantum block. It does not make the learned representation injective.
 
 \paragraph{A decision head that consumes the block output.}
 Because the block emits $Q$ values in $[-1,1]$ rather than eleven allocation scores, a small MLP head is required to map the latent code back to the simplex. This head is identical in every variant.
@@ -453,7 +453,7 @@ are \num{373616}, \num{373668} and \num{369224} monetary units for two, four and
 \paragraph{The dispersion is an order of magnitude below anything reported so
 far.} Standard deviations are \num{4327}, \num{4583} and \num{11075}, which correspond to coefficients of variation of approximately \num{0.012}, \num{0.012} and \num{0.030}. For comparison, the same quantity was \num{0.29} for the scaffold and \num{0.22} for its classical instantiation. Because expectation values are exact, none of this residual spread is estimation noise: it is initialisation variance, measured under the same protocol that produced the much larger figures in \ref{subsec:res-scaffold,subsec:res-classical-width}.
 
-We also note that the narrowest register is the most economical on every axis: four circuit parameters and one CNOT against sixteen and twenty-eight at eight qubits, with a simulation cost that grows exponentially in the register width and a two-qubit-gate count that grows quadratically. Under the evidence available, the cost-benefit optimum in this regime is the \emph{narrow} register, and the eight-qubit configuration is retained in the head-to-head comparison of \ref{subsec:res-headtohead} only because it is the width at which the classical block was matched, not because it was measured to be better.
+The two-qubit configuration has four circuit parameters and one logical CNOT, whereas the eight-qubit configuration has sixteen circuit parameters and twenty-eight logical CNOTs. These counts characterize the implemented circuits, but the experiments do not provide a common end-to-end cost metric from which to infer a cost--benefit optimum. The eight-qubit configuration is retained in the matched-width comparison because it corresponds to the width used for the classical latent block.
 
 \begin{figure}[htbp]
   \centering
