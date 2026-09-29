@@ -281,7 +281,8 @@ This section describes the four architectures evaluated and, more importantly, t
 \subsection{Baseline: EI3}
 \label{subsec:arch-ei3}
 
-The baseline is EI3 as reproduced from the reference implementation~\cite{RLportfolio,RLportfolio} and shown in \ref{fig:arch-ei3}. The observation tensor is processed by three parallel heads; their outputs are concatenated with the previous portfolio weights and reduced by a $1\times1$ convolution directly to the eleven allocation scores, which a softmax turns into weights.
+The baseline is EI3 as reproduced from the reference implementation~\cite{RLportfolio,RLportfolio} and shown in \ref{fig:arch-ei3}.
+\sam{REVIEW P0 -- Duplicate citation key: change \string\cite{RLportfolio,RLportfolio} to \string\cite{RLportfolio}. This is a source-level consistency fix only.} The observation tensor is processed by three parallel heads; their outputs are concatenated with the previous portfolio weights and reduced by a $1\times1$ convolution directly to the eleven allocation scores, which a softmax turns into weights.
 
 \begin{figure*}[!htb]
   \centering
@@ -339,6 +340,7 @@ QEI3-eq (\ref{fig:arch-classical}) instantiates the latent block classically, as
 QEI3 (\ref{fig:arch-quantum}) replaces the same block with a variational circuit, preserving input dimension, output dimension and position in the network. The $Q$ scaled latent values are written into a $Q$-qubit register by angle embedding, a RealAmplitudes ansatz with one repetition and full entanglement is applied, and the block is read out through $\langle Z_i \rangle$ on each qubit. \ref{fig:circuit-q2,fig:circuit-q8} show the circuit at the extremes of the sweep.
 
 At the reference width of eight the circuit carries \num{16} trainable parameters, against \num{72} for the classical block it replaces. This asymmetry is not incidental to the comparison; it is one of its findings, and we return to it in \ref{sec:discussion}.
+\sam{REVIEW P0 -- Two issues: (1) parameter-count asymmetry is an architectural fact, not evidence of parameter efficiency by itself; (2) sec:discussion is currently undefined. Either add a Discussion section or remove/change this forward reference. Suggested related citation if discussing parameter-count comparisons: Sequeira et al. (2023), while clearly attributing its benchmark-specific findings.}
 
 \begin{figure*}[!htb]
   \centering
@@ -373,6 +375,7 @@ The quantum configurations evaluated are listed in \ref{tab:quantum-configs}.
 \begin{table}[htbp]
   \centering
   \caption{Quantum configurations evaluated. The ansatz is RealAmplitudes with $\text{reps} = 1$ and $\text{entanglement} = \texttt{full}$ in every configuration; gate counts are those of the logical circuit, before transpilation to any device connectivity (see \ref{tab:transpiled} for the transpiled cost). All expectation values are computed exactly; seeds follow \ref{eq:seed-rule}.}
+\sam{REVIEW P0 -- tab:transpiled is currently undefined. Remove the parenthetical reference unless a transpilation-cost table is actually added. Also keep ``logical gate counts'' distinct from hardware or end-to-end computational cost.}
   \label{tab:quantum-configs}
   \begin{tabular}{lccccc}
     \toprule
@@ -399,8 +402,10 @@ The results are presented in the order of the experimental chain: the baseline, 
 \ref{fig:ei3-original} characterises EI3 under three training budgets before any modification is introduced. Two observations follow.
 
 First, the attainable level of the baseline depends on the training budget, and the dependence is statistically detectable (Kruskal--Wallis $H(2) = 7.66$, $p = 0.022$, $\varepsilon^2 = 0.099$), with mean final values of \num{192638}, \num{216122} and \num{224138} monetary units. The strongest configuration is therefore the long schedule with a large batch, and it is that value --- \num{224138} --- that any proposed variant must be compared against if the comparison is to be fair.
+\sam{REVIEW P0 -- Kruskal--Wallis is an omnibus test: it supports a difference among at least two distributions but does not identify which pair differs. Suggested rewrite: ``The omnibus test detects a difference among the three final-value distributions. The 120-episode/batch-200 setting has the highest observed mean among the evaluated EI3 configurations.'' If pairwise claims are needed, add corrected post-hoc comparisons. Independently recompute H, p, and epsilon-squared from raw run-level values before submission.}
 
-Second, and more consequentially for the design of this study, the dispersion of the baseline is substantial and grows with the budget that produces the best mean: standard deviations of \num{31608}, \num{28132} and \num{55409}, the last corresponding to a coefficient of variation of roughly \num{0.25}. A single training run of this architecture is thus a weak measurement, which is the empirical justification for the repeated-run protocol of \ref{subsec:protocol}.
+Second, and more consequentially for the design of this study, the dispersion of the baseline is substantial and grows with the budget that produces the best mean: standard deviations of \num{31608}, \num{28132} and \num{55409}, the last corresponding to a coefficient of variation of roughly \num{0.25}.
+\sam{REVIEW P0 -- The observed dispersion does not monotonically grow with budget (31608 -> 28132 -> 55409). Suggested rewrite: ``The highest-budget configuration also has the largest observed standard deviation.''} A single training run of this architecture is thus a weak measurement, which is the empirical justification for the repeated-run protocol of \ref{subsec:protocol}.
 \sam{REVIEW P1 -- Avoid ``weak measurement'' because it has a technical meaning in quantum measurement theory. Suggested replacement: ``The magnitude of run-to-run variability motivates reporting distributions across repeated training runs rather than relying on a single trajectory.'' Cite Henderson 2018, Agarwal 2021, and Patterson 2024.}
 
 \begin{figure}[htbp]
@@ -436,6 +441,7 @@ The run-by-run view also shows \emph{how} the runs differ. They share the shape 
 \ref{fig:layer-width} compares the scaffold with the classical instantiation of the block at the reference width of eight neurons, chosen to match the register width of the quantum counterpart.
 
 Inserting the block raises the mean final value from \num{280563} to \num{301294} monetary units and lowers the coefficient of variation from \num{0.29} to \num{0.22}. Both movements are in the expected direction, and neither is decisive: at $n = 20$ per configuration the final-value distributions are not distinguishable.
+\sam{REVIEW P0 -- No corresponding test statistic is reported here. Do not state ``not distinguishable'' unless the inferential test, effect size, and uncertainty are reported. Suggested rewrite: ``The observed mean increases from ... and the CV decreases from ...; these differences are reported descriptively.''}
 
 The correct reading of this result is not that the classical block does nothing. It is that seventy-two additional parameters, placed at this position in the network, produce an effect that this sample size cannot resolve. This establishes the reference point for the quantum experiment: the question is no longer whether a latent block helps in principle, but whether replacing its parameterisation produces an effect of a magnitude that the same protocol \emph{can} resolve.
 
@@ -456,6 +462,7 @@ Two results emerge, and they should be read together rather than in sequence.
 
 \paragraph{No width-dependent difference is detected in this sweep.} Mean final values
 are \num{373616}, \num{373668} and \num{369224} monetary units for two, four and eight qubits, and the three distributions are indistinguishable (Kruskal--Wallis $H(2) = 2.13$, $p = 0.345$, $\varepsilon^2 = 0.002$). The effect size is essentially zero: register width explains no appreciable fraction of the variability in final value.
+\sam{REVIEW P0 -- A non-significant Kruskal--Wallis test does not establish equivalence or ``indistinguishability''. Suggested rewrite: ``The Kruskal--Wallis test did not detect a difference among the three final-value distributions ($H(2)=2.13$, $p=0.345$). The reported epsilon-squared estimate is small for these campaigns.'' Because Q and seed are confounded, avoid saying register width ``explains'' variability. If equivalence across widths is a substantive claim, use an equivalence design with a pre-specified margin.}
 \sam{REVIEW P0 -- Avoid causal ``explains'' language, especially because Q and seed are confounded. Suggested replacement: ``The reported epsilon-squared estimate is small for these three campaigns.'' State the exact epsilon-squared formula because multiple conventions exist.} Since \ref{eq:seed-rule} ties each width to a distinct seed, we do not read this as evidence that width is irrelevant in general --- the two factors are confounded in this experiment --- but the confound cuts in the direction that strengthens the conclusion we do draw, since the agreement observed is agreement across three independent initialisation streams.
 \sam{REVIEW P0 -- Delete this inference. A pseudorandom stream perfectly confounded with Q does not strengthen a width-stability conclusion. Stronger experiment: evaluate Q=2,4,8 using the same set of seeds (width x seed design).}
 
@@ -468,6 +475,7 @@ The two-qubit configuration has four circuit parameters and one logical CNOT, wh
   \centering
   \includegraphics[width=\linewidth]{fig4_quantica_qubits.png}
   \caption{Quantum architecture under statevector simulation as a function of the width of the quantum latent layer: \num{2}, \num{4} and \num{8} qubits. Colour encodes the number of qubits on a single-hue scale, light to dark. Solid lines show the mean portfolio value and shaded envelopes denote $\pm 1$ standard deviation across $n = 20$ independent runs per configuration. Expectation values are computed exactly, so the dispersion shown is due to initialisation alone and not to sampling noise. The three widths are indistinguishable in final value (Kruskal--Wallis $H(2) = 2.13$, $p = 0.345$, $\varepsilon^2 = 0.002$), with mean final values of \num{373616}, \num{373668} and \num{369224} monetary units; the \num{8}-qubit configuration is the most dispersed of the three (standard deviation \num{11075} against \num{4327} and \num{4583}).}
+\sam{REVIEW P0 -- Caption over-interprets two points. Exact expectation values remove finite-measurement sampling but do not prove that all dispersion is initialization alone; use ``run-to-run training variability''. Also replace ``indistinguishable'' with ``the Kruskal--Wallis test did not detect a difference''.}
   \label{fig:qubit-variation}
 \end{figure}
 
@@ -497,6 +505,7 @@ The two instantiations of the latent block can now be compared at the same width
     QEI3                      & 2 qubits   & 20 & \num{373616} & \num{4327}  & 0.012 \\
     QEI3                      & 4 qubits   & 20 & \num{373668} & \num{4583}  & 0.012 \\
     QEI3                      & 8 qubits   & 20 & \num{369224} & \num{11075} & 0.030 \\
+\sam{REVIEW P0 -- In the table caption, \string\eqref{eq:seed} is undefined; the existing equation label is eq:seed-rule. Also reconsider ``independent training runs'' unless independence is verified.}
     \bottomrule
   \end{tabular}
 \end{table}
