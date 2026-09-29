@@ -20,6 +20,7 @@
 \usepackage[sort&compress]{natbib}
 \usepackage[separate-uncertainty=true]{siunitx}
 \usepackage{comment}
+\usepackage{tcolorbox}
 \usepackage[normalem]{ulem}
 \usepackage[sc,osf]{mathpazo}\linespread{1.05}
 \usepackage{bm}
@@ -144,6 +145,46 @@
 % \href{mailto:samurai.brito@itau-unibanco.com.br}{samurai.brito@itau-unibanco.com.br}
 
 \date{\today}
+% ===== INTERNAL SCIENTIFIC REVIEW: REMOVE BEFORE SUBMISSION =====
+\begin{tcolorbox}[title={\textbf{SB REVIEW --- Critical points to discuss before manuscript revision}},colback=magenta!3,colframe=magenta!70!black]
+\small
+\textbf{Critical points}
+\begin{enumerate}
+\item \textbf{Primary claim.} Keep the main claim as an empirical comparison of latent-block parameterizations under the reported dataset and protocol; do not conflate architectural characterization with quantum advantage, parameter efficiency, regularization, or a causal quantum mechanism.
+\item \textbf{Classical--quantum comparability.} The campaigns are not seed-paired, and the latent blocks differ in parameter count and function class. State exactly what is controlled and what is not.
+\item \textbf{Register-width confounding.} In the $Q\in\{2,4,8\}$ sweep, the pseudorandom stream changes with $Q$. Width and initialization stream are confounded; agreement across campaigns does not establish width invariance or equivalence.
+\item \textbf{Statistical interpretation.} A non-significant Kruskal--Wallis result does not establish equivalence or indistinguishability. Recompute $H$, $p$, and $\varepsilon^2$ from run-level outputs and state the effect-size formula.
+\item \textbf{Central classical--quantum comparison.} The largest reported separation---higher observed mean final value and lower dispersion for the tested quantum configuration---needs an explicit between-model inferential analysis. Separate descriptive from statistical evidence.
+\item \textbf{Meaning of lower dispersion.} Exact statevector expectation values remove finite-measurement sampling from the quantum readout, but do not show that residual dispersion is caused only by initialization or by a quantum regularization mechanism.
+\item \textbf{Evaluation protocol.} The 2020 environment is used for periodic validation and online learning is enabled during evaluation. Explain what information is used, what is updated, whether model selection depends on 2020, and use ``evaluation window'' rather than ``held-out test set'' where appropriate.
+\item \textbf{Independence/reproducibility.} The manuscript calls the 20 runs independent while describing a single pseudorandom stream consumed sequentially. Document all stochastic sources and reproducibility assumptions.
+\item \textbf{Policy-similarity claim.} Similar portfolio-value trajectories do not demonstrate that learned policies are the same up to scale. Quantify action/allocation similarity or restrict the interpretation.
+\item \textbf{Parameter efficiency.} Fewer trainable quantum-block parameters do not by themselves establish parameter, sample, or representational efficiency.
+\item \textbf{Residual removal.} Claims that the residual caused the latent block to be ignored, or that its removal makes optimization harder, require an explicit ablation.
+\item \textbf{External validity.} Evidence comes from one market period and one main testbed. Matched seeds and multiple market windows would materially strengthen causal and generalization claims.
+\end{enumerate}
+\textbf{Questions that must be answered or better explained}
+\begin{enumerate}
+\item What is the single primary research question and primary endpoint?
+\item Which random quantities differ across the 20 runs: initialization, minibatch sampling/order, action noise, optimizer state, environment randomness, online updates, or other sources?
+\item Why is the seed a function of $Q$? Can $Q=2,4,8$ be rerun using the same seed set?
+\item Are the 20 individual final portfolio values available for every configuration, and do they reproduce all reported means, SDs, CVs, Kruskal--Wallis statistics, $p$ values, and effect sizes?
+\item Which definition of $\varepsilon^2$ was used?
+\item What inferential comparison will be used for the main classical-versus-quantum result, with which effect size and uncertainty interval?
+\item Was the 2020 evaluation window used for hyperparameter tuning, architecture selection, early stopping, checkpoint selection, or another model-selection decision?
+\item What exactly is updated during online learning in the 2020 evaluation episode, and how often?
+\item Are transaction costs applied identically to every reported portfolio value and benchmark?
+\item Is the classical latent block exactly the architecture described in the body and figure (activation order, affine map, width, parameter count)?
+\item Does same protocol mean identical hyperparameters only, or also identical seed sets and stochastic realizations?
+\item Is there run-level evidence that the policies themselves are similar, or only visual similarity in portfolio-value trajectories?
+\item What resource metric, if any, supports discussion of parameter or computational efficiency?
+\item Are all curves in the final classical benchmark figure produced with comparable datasets, evaluation rules, transaction costs, run counts, and model-selection procedures?
+\item Which claims are demonstrated findings, which are descriptive observations, and which are hypotheses for future mechanistic investigation?
+\end{enumerate}
+\textbf{Evidence standard.} Separate each major statement into: \emph{observed result} $\rightarrow$ \emph{statistical evidence} $\rightarrow$ \emph{interpretation} $\rightarrow$ \emph{mechanistic hypothesis}.
+\end{tcolorbox}
+% ===== END INTERNAL SCIENTIFIC REVIEW =====
+
 \begin{abstract}
 Hybrid quantum--classical models provide a practical setting for studying parameterized quantum circuits inside otherwise classical learning pipelines. We investigate a specific architectural question in reinforcement learning for portfolio allocation: how does the empirical behaviour of a policy change when one latent block is absent, instantiated classically, or implemented as a variational quantum circuit? Starting from the EI3 policy available in RLPortfolio, we construct a common scaffold and evaluate each configuration over 20 training runs. The quantum configurations are evaluated with exact statevector expectation values. Under the experimental protocol used here, the tested quantum configurations attain higher mean final portfolio values and lower run-to-run dispersion than the tested classical configurations. In the register-width experiment, the reported final-value distributions for 2, 4, and 8 qubits are not separated by the Kruskal--Wallis test ($H(2)=2.13$, $p=0.345$). Because register width and pseudorandom stream are confounded in that sweep, and because the classical and quantum campaigns are not seed-paired, these results are interpreted as an empirical characterization of the tested architectures rather than evidence of quantum advantage or of a uniquely quantum mechanism.
 \end{abstract}
