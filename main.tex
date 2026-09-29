@@ -20,7 +20,7 @@
 \usepackage[sort&compress]{natbib}
 \usepackage[separate-uncertainty=true]{siunitx}
 \usepackage{comment}
-\usepackage{tcolorbox}
+\usepackage[most]{tcolorbox}
 \usepackage[normalem]{ulem}
 \usepackage[sc,osf]{mathpazo}\linespread{1.05}
 \usepackage{bm}
@@ -145,8 +145,15 @@
 % \href{mailto:samurai.brito@itau-unibanco.com.br}{samurai.brito@itau-unibanco.com.br}
 
 \date{\today}
+
+
+\begin{abstract}
+Hybrid quantum--classical models provide a practical setting for studying parameterized quantum circuits inside otherwise classical learning pipelines. We investigate a specific architectural question in reinforcement learning for portfolio allocation: how does the empirical behaviour of a policy change when one latent block is absent, instantiated classically, or implemented as a variational quantum circuit? Starting from the EI3 policy available in RLPortfolio, we construct a common scaffold and evaluate each configuration over 20 training runs. The quantum configurations are evaluated with exact statevector expectation values. Under the experimental protocol used here, the tested quantum configurations attain higher mean final portfolio values and lower run-to-run dispersion than the tested classical configurations. In the register-width experiment, the reported final-value distributions for 2, 4, and 8 qubits are not separated by the Kruskal--Wallis test ($H(2)=2.13$, $p=0.345$). Because register width and pseudorandom stream are confounded in that sweep, and because the classical and quantum campaigns are not seed-paired, these results are interpreted as an empirical characterization of the tested architectures rather than evidence of quantum advantage or of a uniquely quantum mechanism.
+\end{abstract}
+\maketitle
+\onecolumngrid
 % ===== INTERNAL SCIENTIFIC REVIEW: REMOVE BEFORE SUBMISSION =====
-\begin{tcolorbox}[title={\textbf{SB REVIEW --- Critical points to discuss before manuscript revision}},colback=magenta!3,colframe=magenta!70!black]
+\begin{tcolorbox}[enhanced,breakable,title={\textbf{SB REVIEW --- Critical points to discuss before manuscript revision}},colback=magenta!3,colframe=magenta!70!black,boxrule=0.8pt,arc=1mm,left=2mm,right=2mm,top=1.5mm,bottom=1.5mm,before skip=6pt,after skip=6pt]
 \small
 \textbf{Critical points}
 \begin{enumerate}
@@ -184,11 +191,7 @@
 \textbf{Evidence standard.} Separate each major statement into: \emph{observed result} $\rightarrow$ \emph{statistical evidence} $\rightarrow$ \emph{interpretation} $\rightarrow$ \emph{mechanistic hypothesis}.
 \end{tcolorbox}
 % ===== END INTERNAL SCIENTIFIC REVIEW =====
-
-\begin{abstract}
-Hybrid quantum--classical models provide a practical setting for studying parameterized quantum circuits inside otherwise classical learning pipelines. We investigate a specific architectural question in reinforcement learning for portfolio allocation: how does the empirical behaviour of a policy change when one latent block is absent, instantiated classically, or implemented as a variational quantum circuit? Starting from the EI3 policy available in RLPortfolio, we construct a common scaffold and evaluate each configuration over 20 training runs. The quantum configurations are evaluated with exact statevector expectation values. Under the experimental protocol used here, the tested quantum configurations attain higher mean final portfolio values and lower run-to-run dispersion than the tested classical configurations. In the register-width experiment, the reported final-value distributions for 2, 4, and 8 qubits are not separated by the Kruskal--Wallis test ($H(2)=2.13$, $p=0.345$). Because register width and pseudorandom stream are confounded in that sweep, and because the classical and quantum campaigns are not seed-paired, these results are interpreted as an empirical characterization of the tested architectures rather than evidence of quantum advantage or of a uniquely quantum mechanism.
-\end{abstract}
-\maketitle
+\twocolumngrid
 
 % =====================================================================
 \section{Introduction}
